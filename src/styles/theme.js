@@ -18,6 +18,11 @@ const theme = {
     subIconSelectedHeight: "2.1875rem", // 35px
     subIconDefaultWidth: "1.5rem", // 24px
     subIconDefaultHeight: "1.5rem", // 24px
+
+    loginKakaoIconWidth: "2.7rem", // 43px
+    loginKakaoIconHeight: "2.7rem", // 43px
+    loginGoogleIconWidth: "1.75rem", // 28px
+    loginGoogleIconHeight: "1.75rem", // 28px
   },
   fontSizes: {
     small: "0.875rem", // 14px

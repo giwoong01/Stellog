@@ -16,13 +16,26 @@ const createMarkerImage = (width: number, height: number) => {
   );
 };
 
-const useKakaoMap = (mapContainerId: string, locations: Location[]) => {
+const useKakaoMap = (
+  mapContainerId: string,
+  locations: Location[],
+  onMarkerClick: (location: Location) => void
+) => {
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_MAP_KEY}&autoload=false&libraries=services`;
-    script.async = true;
+    if (
+      !document.querySelector(`script[src="//dapi.kakao.com/v2/maps/sdk.js"]`)
+    ) {
+      const script = document.createElement("script");
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_MAP_KEY}&autoload=false&libraries=services`;
+      script.async = true;
+      document.head.appendChild(script);
 
-    script.onload = () => {
+      script.onload = () => initializeMap();
+    } else {
+      initializeMap();
+    }
+
+    function initializeMap() {
       if (typeof window !== "undefined" && window.kakao && window.kakao.maps) {
         window.kakao.maps.load(() => {
           const mapContainer = document.getElementById(mapContainerId);
@@ -69,24 +82,13 @@ const useKakaoMap = (mapContainerId: string, locations: Location[]) => {
             });
 
             window.kakao.maps.event.addListener(marker, "click", () => {
-              alert(`${location.name}\n${location.address}`);
+              onMarkerClick(location);
             });
           });
         });
       }
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      const existingScript = document.querySelector(
-        `script[src="${script.src}"]`
-      );
-      if (existingScript) {
-        existingScript.remove();
-      }
-    };
-  }, [mapContainerId, locations]);
+    }
+  }, [mapContainerId, locations, onMarkerClick]);
 };
 
 export default useKakaoMap;

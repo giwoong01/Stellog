@@ -9,6 +9,7 @@ import Sidebar from "./components/Sidebar";
 import { ThemeProvider } from "styled-components";
 import theme from "./styles/theme";
 import Login from "./pages/Login";
+import Main from "./pages/Main";
 
 const DefaultLayout: React.FC = () => {
   return (
@@ -27,7 +28,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
 
           <Route element={<DefaultLayout />}>
-            <Route path="/" element={<div>Home</div>} />
+            <Route path="/" element={<Main />} />
             <Route path="/rooms" element={<div>rooms</div>} />
             <Route path="/routes" element={<div>routes</div>} />
             <Route path="/mypage" element={<div>mypage</div>} />

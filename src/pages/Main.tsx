@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useKakaoMap from "../hooks/useKakaoMap";
 import LocationDetailModal from "../components/modals/LocationDetailModal";
 import locations from "../data/locations.json";
@@ -14,27 +15,20 @@ const Main: React.FC = () => {
     imageUrl: string;
   } | null>(null);
 
+  const navigate = useNavigate();
+
   const handleMarkerClick = (location: any) => {
     setSelectedLocation(location);
     setIsModalOpen(true);
   };
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
-    setMemberInfo({
-      name: "웅이",
-      imageUrl:
-        "https://storage.googleapis.com/image-gcs/project/3/33190dd8-ad66-4186-ba4e-e2763f371b5b",
-    });
+    navigate("/login");
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setMemberInfo({
-      name: "웅이",
-      imageUrl:
-        "https://storage.googleapis.com/image-gcs/project/3/33190dd8-ad66-4186-ba4e-e2763f371b5b",
-    });
+    setMemberInfo(null);
   };
 
   useKakaoMap("map", locations, handleMarkerClick);

@@ -7,7 +7,7 @@ on:
 
 jobs:
   sync:
-    if: github.repository == 'Stellog-FE/Stellog' # 원본 저장소에서만 실행되도록
+    if: github.repository == 'StellogArchive/Stellog-FE'
     runs-on: ubuntu-latest
 
     steps:

@@ -1,0 +1,31 @@
+name: Sync to Fork (for Vercel deploy)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    if: github.repository == 'Stellog-FE/Stellog' # 원본 저장소에서만 실행되도록
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Git
+        run: |
+          git config user.name "giwoong"
+          git config user.email "${{ secrets.USER_EMAIL }}"
+
+      - name: Add fork as remote
+        run: |
+          git remote add fork https://giwoong01:${{ secrets.PAT_TOKEN }}@github.com/giwoong01/Stellog.git
+
+      - name: Push to fork
+        run: |
+          git push fork main --force

@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { ReactComponent as Logo } from "../assets/icons/logo.svg";
-import { ReactComponent as RoomIconSVG } from "../assets/icons/room.svg";
-import { ReactComponent as MapIconSVG } from "../assets/icons/map.svg";
-import { ReactComponent as CalendarIconSVG } from "../assets/icons/calendar.svg";
-import { ReactComponent as RouteCalculationIconSVG } from "../assets/icons/route-calculation.svg";
-import { ReactComponent as RoomInfoIconSVG } from "../assets/icons/room-info.svg";
-import { ReactComponent as RoutesIconSVG } from "../assets/icons/routes.svg";
-import { ReactComponent as MyRouteIconSVG } from "../assets/icons/my-route.svg";
-import { ReactComponent as SavedRoutesIconSVG } from "../assets/icons/saved-routes.svg";
-import { ReactComponent as MyPageIconSVG } from "../assets/icons/mypage.svg";
-import { ReactComponent as ReviewIconSVG } from "../assets/icons/review.svg";
+import { ReactComponent as Logo } from "../../assets/icons/logo.svg";
+import { ReactComponent as RoomIconSVG } from "../../assets/icons/room.svg";
+import { ReactComponent as MapIconSVG } from "../../assets/icons/map.svg";
+import { ReactComponent as CalendarIconSVG } from "../../assets/icons/calendar.svg";
+import { ReactComponent as RouteCalculationIconSVG } from "../../assets/icons/route-calculation.svg";
+import { ReactComponent as RoomInfoIconSVG } from "../../assets/icons/room-info.svg";
+import { ReactComponent as RoutesIconSVG } from "../../assets/icons/routes.svg";
+import { ReactComponent as MyRouteIconSVG } from "../../assets/icons/my-route.svg";
+import { ReactComponent as SavedRoutesIconSVG } from "../../assets/icons/saved-routes.svg";
+import { ReactComponent as MyPageIconSVG } from "../../assets/icons/mypage.svg";
+import { ReactComponent as ReviewIconSVG } from "../../assets/icons/review.svg";
 import SidebarMenu from "./SidebarMenu";
 
 const Sidebar: React.FC = () => {

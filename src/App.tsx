@@ -5,11 +5,13 @@ import {
   Route,
   Outlet,
 } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar/Sidebar";
 import { ThemeProvider } from "styled-components";
 import theme from "./styles/theme";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
+import Room from "./pages/Room";
+import RoomCreate from "./components/room/create/RoomCreate";
 
 const DefaultLayout: React.FC = () => {
   return (
@@ -29,7 +31,8 @@ const App: React.FC = () => {
 
           <Route element={<DefaultLayout />}>
             <Route path="/" element={<Main />} />
-            <Route path="/rooms" element={<div>rooms</div>} />
+            <Route path="/rooms" element={<Room />} />
+            <Route path="/rooms/create" element={<RoomCreate />} />
             <Route path="/routes" element={<div>routes</div>} />
             <Route path="/mypage" element={<div>mypage</div>} />
             <Route path="/rooms/map" element={<div>Rooms - Map</div>} />

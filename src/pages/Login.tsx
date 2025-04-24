@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import SocialLoginButton from "../components/SocialLoginButton";
+import SocialLoginButton from "../components/sidebar/SocialLoginButton";
 import { ReactComponent as MapLineSVG } from "../assets/icons/map-line.svg";
 import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import { ReactComponent as KakaoSVG } from "../assets/icons/kakao.svg";

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useRoomStore } from "../../../stores/useRoomStore";
+import { useRoomStore } from "../stores/useRoomStore";
 import { useNavigate } from "react-router-dom";
 
-import RoomNameInput from "./RoomNameInput";
-import MemberSelector from "./MemberSelector";
-import VisibilitySelector from "./VisibilitySelector";
-import CreateRoomButton from "./CreateRoomButton";
+import RoomNameInput from "../components/room/create/RoomNameInput";
+import MemberSelector from "../components/room/create/MemberSelector";
+import VisibilitySelector from "../components/room/create/VisibilitySelector";
+import CreateRoomButton from "../components/room/create/CreateRoomButton";
 
 const RoomCreate = () => {
   const [roomName, setRoomName] = useState("");
@@ -20,6 +20,7 @@ const RoomCreate = () => {
   const [visibility, setVisibility] = useState<"public" | "private">("public");
 
   const { addRoom } = useRoomStore();
+  const setCurrentRoomId = useRoomStore((state) => state.setCurrentRoomId);
   const navigate = useNavigate();
 
   const allMembers = [
@@ -67,14 +68,16 @@ const RoomCreate = () => {
       return;
     }
 
+    const id = Math.random();
     addRoom({
-      id: Math.random(),
+      id: id,
       title: roomName,
       members,
       visitsCount: 0,
       isPublic: visibility === "public",
     });
 
+    setCurrentRoomId(id);
     alert("방이 생성되었습니다!");
     setRoomName("");
     navigate("/rooms");

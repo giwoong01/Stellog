@@ -14,12 +14,16 @@ interface Room {
 
 interface RoomStore {
     rooms: Room[];
+    currentRoomId: number | null;
     setRooms: (rooms: Room[]) => void;
     addRoom: (room: Room) => void;
+    setCurrentRoomId: (roomId: number | null) => void;
 }
 
 export const useRoomStore = create<RoomStore>((set) => ({
     rooms: [],
+    currentRoomId: null,
     setRooms: (rooms) => set({ rooms }),
     addRoom: (room) => set((state) => ({ rooms: [...state.rooms, room] })),
+    setCurrentRoomId: (roomId) => set({ currentRoomId: roomId }),
 }));

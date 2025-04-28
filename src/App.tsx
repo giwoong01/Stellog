@@ -11,7 +11,8 @@ import theme from "./styles/theme";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import Room from "./pages/Room";
-import RoomCreate from "./components/room/create/RoomCreate";
+import RoomCreate from "./pages/RoomCreate";
+import RoomDetail from "./pages/RoomDetail";
 
 const DefaultLayout: React.FC = () => {
   return (
@@ -33,19 +34,19 @@ const App: React.FC = () => {
             <Route path="/" element={<Main />} />
             <Route path="/rooms" element={<Room />} />
             <Route path="/rooms/create" element={<RoomCreate />} />
+            <Route path="/rooms/:roomId" element={<RoomDetail />} />
             <Route path="/routes" element={<div>routes</div>} />
             <Route path="/mypage" element={<div>mypage</div>} />
-            <Route path="/rooms/map" element={<div>Rooms - Map</div>} />
             <Route
-              path="/rooms/calendar"
+              path="/rooms/:roomId/calendar"
               element={<div>Rooms - Calendar</div>}
             />
             <Route
-              path="/rooms/route-calculation"
+              path="/rooms/:roomId/route-calculation"
               element={<div>Rooms - Route Calculation</div>}
             />
             <Route
-              path="/rooms/room-info"
+              path="/rooms/:roomId/room-info"
               element={<div>Rooms - Room Info</div>}
             />
 

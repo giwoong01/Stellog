@@ -10,11 +10,12 @@ interface RoomCardProps {
     profileImage: string;
   }[];
   visitsCount: number;
+  onClick: () => void;
 }
 
-const RoomCard = ({ title, members, visitsCount }: RoomCardProps) => {
+const RoomCard = ({ title, members, visitsCount, onClick }: RoomCardProps) => {
   return (
-    <Card>
+    <Card onClick={onClick}>
       <Title>{title}</Title>
       <IconContainer>
         <Meta>

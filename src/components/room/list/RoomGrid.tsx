@@ -38,6 +38,7 @@ const RoomGrid = ({ currentPage, rooms }: RoomGridProps) => {
             title={room.title}
             members={room.members}
             visitsCount={room.visitsCount}
+            onClick={() => navigate(`/rooms/${room.id}`)}
           />
         ))}
       </Grid>

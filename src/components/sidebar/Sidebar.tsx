@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ReactComponent as Logo } from "../../assets/icons/logo.svg";
 import { ReactComponent as RoomIconSVG } from "../../assets/icons/room.svg";
 import { ReactComponent as MapIconSVG } from "../../assets/icons/map.svg";
@@ -13,9 +13,12 @@ import { ReactComponent as SavedRoutesIconSVG } from "../../assets/icons/saved-r
 import { ReactComponent as MyPageIconSVG } from "../../assets/icons/mypage.svg";
 import { ReactComponent as ReviewIconSVG } from "../../assets/icons/review.svg";
 import SidebarMenu from "./SidebarMenu";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentRoomId = useRoomStore((state) => state.currentRoomId);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
 
   const subMenuData = {
@@ -23,22 +26,22 @@ const Sidebar: React.FC = () => {
       {
         label: "지도",
         Icon: StyledSubMapIcon,
-        path: "/rooms/map",
+        path: `/rooms/${currentRoomId}`,
       },
       {
         label: "캘린더",
         Icon: StyledSubCalendarIcon,
-        path: "/rooms/calendar",
+        path: `/rooms/${currentRoomId}/calendar`,
       },
       {
         label: "동선 계산",
         Icon: StyledSubRouteCalculationIcon,
-        path: "/rooms/route-calculation",
+        path: `/rooms/${currentRoomId}/route-calculation`,
       },
       {
         label: "방 정보",
         Icon: StyledSubRoomInfoIcon,
-        path: "/rooms/room-info",
+        path: `/rooms/${currentRoomId}/room-info`,
       },
     ],
     routes: [
@@ -70,6 +73,19 @@ const Sidebar: React.FC = () => {
   const toggleSubMenu = (menu: string) => {
     setOpenSubMenu(openSubMenu === menu ? null : menu);
   };
+
+  // 현재 경로에 따라 서브 메뉴를 열기
+  useEffect(() => {
+    if (location.pathname.startsWith("/rooms/")) {
+      setOpenSubMenu("rooms");
+    } else if (location.pathname.startsWith("/routes")) {
+      setOpenSubMenu("routes");
+    } else if (location.pathname.startsWith("/mypage")) {
+      setOpenSubMenu("mypage");
+    } else {
+      setOpenSubMenu(null);
+    }
+  }, [location.pathname]);
 
   return (
     <SidebarContainer>

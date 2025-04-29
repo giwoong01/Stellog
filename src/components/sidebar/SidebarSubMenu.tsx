@@ -17,15 +17,23 @@ const SidebarSubMenu: React.FC<SubMenuProps> = ({ items, isOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 서브 메뉴가 열려야 하는 조건
+  const shouldOpenSubMenu =
+    (location.pathname.startsWith("/rooms/") &&
+      location.pathname !== "/rooms" &&
+      location.pathname !== "/rooms/create") ||
+    location.pathname.startsWith("/routes") ||
+    location.pathname.startsWith("/mypage");
+
   return (
-    <SubMenuContainer isOpen={isOpen}>
+    <SubMenuContainer isOpen={isOpen && shouldOpenSubMenu}>
       {items.map((item, index) => {
         const isSelected = location.pathname === item.path;
 
         return (
           <SubMenuItem
             key={index}
-            isOpen={isOpen}
+            isOpen={isOpen && shouldOpenSubMenu}
             delay={index * 0.15}
             onClick={() => navigate(item.path)}
           >

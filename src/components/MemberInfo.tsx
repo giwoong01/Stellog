@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 
 interface MemberInfoProps {
@@ -11,12 +10,12 @@ interface MemberInfoProps {
   onLogout: () => void;
 }
 
-const MemberInfo: React.FC<MemberInfoProps> = ({
+const MemberInfo = ({
   isLoggedIn,
   userInfo,
   onLogin,
   onLogout,
-}) => {
+}: MemberInfoProps) => {
   return (
     <Container>
       {isLoggedIn ? (

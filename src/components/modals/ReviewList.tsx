@@ -21,9 +21,10 @@ interface Review {
 interface ReviewListProps {
   reviews: Review[];
   onSelectReview: (review: Review) => void;
+  isRoom?: boolean;
 }
 
-const ReviewList: React.FC<ReviewListProps> = ({ reviews, onSelectReview }) => {
+const ReviewList = ({ reviews, onSelectReview, isRoom }: ReviewListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const reviewsPerPage = 4;
@@ -43,6 +44,16 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews, onSelectReview }) => {
 
   return (
     <>
+      {isRoom && (
+        <ButtonContainer>
+          <WriteReviewButton
+            onClick={() => console.log("리뷰 작성 버튼 클릭됨")}
+          >
+            리뷰 작성
+          </WriteReviewButton>
+        </ButtonContainer>
+      )}
+
       {currentReviews.map((review) => (
         <ReviewBox key={review.id} onClick={() => onSelectReview(review)}>
           <Thumbnail src={review.imageUrl} alt="review" />
@@ -74,6 +85,34 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews, onSelectReview }) => {
 };
 
 export default ReviewList;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: 1rem;
+`;
+
+const WriteReviewButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.3rem;
+  background-color: #036635;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #024a27;
+  }
+
+  &:active {
+    background-color: #01381d;
+  }
+`;
 
 const ReviewBox = styled.div`
   display: flex;

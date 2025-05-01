@@ -6,7 +6,7 @@ interface Member {
   profileImage: string;
 }
 
-interface Props {
+interface MemberSelectorProps {
   search: string;
   onSearchChange: (value: string) => void;
   filteredMembers: Member[];
@@ -22,7 +22,7 @@ const MemberSelector = ({
   selectedMembers,
   toggleMember,
   currentMemberId,
-}: Props) => (
+}: MemberSelectorProps) => (
   <ListContainer>
     <SearchWrapper>
       <SearchInput

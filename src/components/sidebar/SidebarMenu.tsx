@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
-import SidebarSub from "./SidebarSubMenu";
+import SidebarSubMenu from "./SidebarSubMenu";
 
 interface SidebarMenuProps {
   label: string;
@@ -17,7 +17,7 @@ interface SidebarMenuProps {
   toggleSubMenu: (menu: string) => void;
 }
 
-const SidebarMenu: React.FC<SidebarMenuProps> = ({
+const SidebarMenu = ({
   label,
   icon: Icon,
   subMenuItems,
@@ -25,7 +25,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   isOpen,
   menu,
   toggleSubMenu,
-}) => {
+}: SidebarMenuProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,7 +42,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
         <Icon isSelected={isSelected} />
         <MenuLabel isSelected={isSelected}>{label}</MenuLabel>
       </MenuItem>
-      <SidebarSub isOpen={isOpen} items={subMenuItems} />
+      <SidebarSubMenu isOpen={isOpen} items={subMenuItems} />
     </>
   );
 };

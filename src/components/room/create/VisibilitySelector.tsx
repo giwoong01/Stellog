@@ -1,11 +1,14 @@
 import styled from "styled-components";
 
-interface Props {
+interface VisibilitySelectorProps {
   visibility: "public" | "private";
   onChange: (value: "public" | "private") => void;
 }
 
-const VisibilitySelector = ({ visibility, onChange }: Props) => {
+const VisibilitySelector = ({
+  visibility,
+  onChange,
+}: VisibilitySelectorProps) => {
   return (
     <RadioWrapper>
       <RadioLabel>

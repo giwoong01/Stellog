@@ -2,6 +2,7 @@ import styled from "styled-components";
 import RoomCard from "./RoomCard";
 import AddRoomCard from "./AddRoomCard";
 import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../../../stores/useRoomStore";
 
 interface Room {
   id: number;
@@ -22,6 +23,10 @@ interface RoomGridProps {
 
 const RoomGrid = ({ currentPage, rooms }: RoomGridProps) => {
   const navigate = useNavigate();
+  const setCurrentRoomId = useRoomStore((state) => state.setCurrentRoomId);
+  const setCurrentRoomTitle = useRoomStore(
+    (state) => state.setCurrentRoomTitle
+  );
 
   const handleAddRoom = () => {
     navigate("/rooms/create");
@@ -38,7 +43,11 @@ const RoomGrid = ({ currentPage, rooms }: RoomGridProps) => {
             title={room.title}
             members={room.members}
             visitsCount={room.visitsCount}
-            onClick={() => navigate(`/rooms/${room.id}`)}
+            onClick={() => {
+              setCurrentRoomId(room.id);
+              setCurrentRoomTitle(room.title);
+              navigate(`/rooms/${room.id}`);
+            }}
           />
         ))}
       </Grid>

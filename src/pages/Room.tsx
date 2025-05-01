@@ -5,7 +5,7 @@ import RoomGrid from "../components/room/list/RoomGrid";
 import Pagination from "../components/Pagination";
 import { useRoomStore } from "../stores/useRoomStore";
 
-const Room: React.FC = () => {
+const Room = () => {
   const { rooms } = useRoomStore();
   const [currentPage, setCurrentPage] = useState(1);
 

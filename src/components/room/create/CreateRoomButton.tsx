@@ -1,10 +1,10 @@
 import styled from "styled-components";
 
-interface Props {
+interface CreateRoomButtonProps {
   onClick: () => void;
 }
 
-const CreateRoomButton = ({ onClick }: Props) => (
+const CreateRoomButton = ({ onClick }: CreateRoomButtonProps) => (
   <Button onClick={onClick}>생성</Button>
 );
 

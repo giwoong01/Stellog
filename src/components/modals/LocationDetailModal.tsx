@@ -22,13 +22,15 @@ interface LocationDetailModalProps {
     name: string;
     address: string;
   } | null;
+  isRoom?: boolean;
 }
 
-const LocationDetailModal: React.FC<LocationDetailModalProps> = ({
+const LocationDetailModal = ({
   isOpen,
   onClose,
   location,
-}) => {
+  isRoom,
+}: LocationDetailModalProps) => {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
   const handleClose = () => {
@@ -47,9 +49,14 @@ const LocationDetailModal: React.FC<LocationDetailModalProps> = ({
           <ReviewDetail
             review={selectedReview}
             onBack={() => setSelectedReview(null)}
+            isRoom={isRoom}
           />
         ) : (
-          <ReviewList reviews={reviews} onSelectReview={setSelectedReview} />
+          <ReviewList
+            reviews={reviews}
+            onSelectReview={setSelectedReview}
+            isRoom={isRoom}
+          />
         )}
       </ModalBox>
     </Overlay>
@@ -101,7 +108,7 @@ const Title = styled.div`
   padding: 0.375rem 10%;
   border-top: 0.3px solid #036635;
   border-bottom: 1.5px solid #036635;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 
   @media (max-width: 768px) {
     font-size: 1.3rem;

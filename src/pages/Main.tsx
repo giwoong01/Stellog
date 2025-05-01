@@ -6,7 +6,7 @@ import locations from "../data/locations.json";
 import styled from "styled-components";
 import MemberInfo from "../components/MemberInfo";
 
-const Main: React.FC = () => {
+const Main = () => {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,7 +35,7 @@ const Main: React.FC = () => {
 
   return (
     <MainContainer>
-      <div id="map" style={{ width: "100%", height: "60rem" }} />
+      <MapContainer id="map" />
 
       {selectedLocation && (
         <LocationDetailModal
@@ -62,4 +62,9 @@ const MainContainer = styled.div`
   height: 100vh;
   overflow: hidden;
   position: relative;
+`;
+
+const MapContainer = styled.div`
+  width: 100%;
+  height: 60rem;
 `;

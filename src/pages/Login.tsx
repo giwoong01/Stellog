@@ -6,7 +6,7 @@ import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import { ReactComponent as KakaoSVG } from "../assets/icons/kakao.svg";
 import { ReactComponent as GoogleSVG } from "../assets/icons/google.svg";
 
-const Login: React.FC = () => {
+const Login = () => {
   return (
     <Container>
       <StyledMapLineSVG />

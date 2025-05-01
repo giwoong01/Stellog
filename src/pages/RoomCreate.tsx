@@ -21,6 +21,9 @@ const RoomCreate = () => {
 
   const { addRoom } = useRoomStore();
   const setCurrentRoomId = useRoomStore((state) => state.setCurrentRoomId);
+  const setCurrentRoomTitle = useRoomStore(
+    (state) => state.setCurrentRoomTitle
+  );
   const navigate = useNavigate();
 
   const allMembers = [
@@ -78,6 +81,7 @@ const RoomCreate = () => {
     });
 
     setCurrentRoomId(id);
+    setCurrentRoomTitle(roomName);
     alert("방이 생성되었습니다!");
     setRoomName("");
     navigate("/rooms");

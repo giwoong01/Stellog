@@ -1,11 +1,11 @@
 import styled from "styled-components";
 
-interface Props {
+interface RoomNameInputProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const RoomNameInput = ({ value, onChange }: Props) => (
+const RoomNameInput = ({ value, onChange }: RoomNameInputProps) => (
   <Input
     placeholder="방 이름을 입력하세요."
     value={value}

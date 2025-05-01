@@ -15,7 +15,7 @@ import { ReactComponent as ReviewIconSVG } from "../../assets/icons/review.svg";
 import SidebarMenu from "./SidebarMenu";
 import { useRoomStore } from "../../stores/useRoomStore";
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentRoomId = useRoomStore((state) => state.currentRoomId);

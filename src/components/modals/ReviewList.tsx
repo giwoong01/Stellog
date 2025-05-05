@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { BiSolidLike } from "react-icons/bi";
 import { BiLike } from "react-icons/bi";
 import Pagination from "../Pagination";
+import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 const LikeSolidIcon = BiSolidLike as unknown as React.FC;
 const LikeIcon = BiLike as unknown as React.FC;
@@ -25,7 +27,9 @@ interface ReviewListProps {
 }
 
 const ReviewList = ({ reviews, onSelectReview, isRoom }: ReviewListProps) => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const { currentRoomId } = useRoomStore();
 
   const reviewsPerPage = 4;
   const totalPages = Math.ceil(reviews.length / reviewsPerPage);
@@ -47,7 +51,7 @@ const ReviewList = ({ reviews, onSelectReview, isRoom }: ReviewListProps) => {
       {isRoom && (
         <ButtonContainer>
           <WriteReviewButton
-            onClick={() => console.log("리뷰 작성 버튼 클릭됨")}
+            onClick={() => navigate(`/rooms/${currentRoomId}/review`)}
           >
             리뷰 작성
           </WriteReviewButton>

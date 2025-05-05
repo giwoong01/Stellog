@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { BiSolidLike } from "react-icons/bi";
 import { BiLike } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 const LikeSolidIcon = BiSolidLike as unknown as React.FC;
 const LikeIcon = BiLike as unknown as React.FC;
@@ -24,6 +26,9 @@ interface ReviewDetailProps {
 }
 
 const ReviewDetail = ({ review, onBack, isRoom }: ReviewDetailProps) => {
+  const navigate = useNavigate();
+  const { currentRoomId } = useRoomStore();
+
   const parseContent = (content: string) => {
     const urlPattern =
       /(https?:\/\/(?:storage\.googleapis\.com|s3\.amazonaws\.com)\/[^\s]+)/gi;
@@ -42,15 +47,22 @@ const ReviewDetail = ({ review, onBack, isRoom }: ReviewDetailProps) => {
     );
   };
 
+  const handleEditClick = () => {
+    navigate(`/rooms/${currentRoomId}/review`, {
+      state: {
+        title: review.title,
+        content: review.content,
+      },
+    });
+  };
+
   return (
     <>
       <ActionButtons>
         <BackButton onClick={onBack}>◀ 목록으로</BackButton>
         {isRoom && (
           <ButtonContainer>
-            <EditButton onClick={() => console.log("수정 버튼 클릭")}>
-              수정
-            </EditButton>
+            <EditButton onClick={handleEditClick}>수정</EditButton>
             <DeleteButton onClick={() => console.log("삭제 버튼 클릭")}>
               삭제
             </DeleteButton>

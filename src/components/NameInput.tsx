@@ -1,20 +1,21 @@
 import styled from "styled-components";
 
-interface RoomNameInputProps {
+interface NameInputProps {
+  placeholder: string;
   value: string;
   onChange: (value: string) => void;
 }
 
-const RoomNameInput = ({ value, onChange }: RoomNameInputProps) => (
+const NameInput = ({ placeholder, value, onChange }: NameInputProps) => (
   <Input
-    placeholder="방 이름을 입력하세요."
+    placeholder={placeholder}
     value={value}
     onChange={(e) => onChange(e.target.value)}
     onFocus={(e) => (e.target.placeholder = "")}
   />
 );
 
-export default RoomNameInput;
+export default NameInput;
 
 const Input = styled.input`
   width: 40%;

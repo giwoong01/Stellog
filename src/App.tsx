@@ -13,8 +13,9 @@ import Main from "./pages/Main";
 import Room from "./pages/Room";
 import RoomCreate from "./pages/RoomCreate";
 import RoomDetail from "./pages/RoomDetail";
+import ReviewForm from "./pages/ReviewForm";
 
-const DefaultLayout: React.FC = () => {
+const DefaultLayout = () => {
   return (
     <>
       <Sidebar />
@@ -23,7 +24,7 @@ const DefaultLayout: React.FC = () => {
   );
 };
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <Router>
@@ -35,8 +36,6 @@ const App: React.FC = () => {
             <Route path="/rooms" element={<Room />} />
             <Route path="/rooms/create" element={<RoomCreate />} />
             <Route path="/rooms/:roomId" element={<RoomDetail />} />
-            <Route path="/routes" element={<div>routes</div>} />
-            <Route path="/mypage" element={<div>mypage</div>} />
             <Route
               path="/rooms/:roomId/calendar"
               element={<div>Rooms - Calendar</div>}
@@ -49,7 +48,9 @@ const App: React.FC = () => {
               path="/rooms/:roomId/room-info"
               element={<div>Rooms - Room Info</div>}
             />
+            <Route path="/rooms/:roomId/review" element={<ReviewForm />} />
 
+            <Route path="/routes" element={<div>routes</div>} />
             <Route
               path="/routes/my-route"
               element={<div>Routes - My Route</div>}
@@ -59,6 +60,7 @@ const App: React.FC = () => {
               element={<div>Routes - Saved Routes</div>}
             />
 
+            <Route path="/mypage" element={<div>mypage</div>} />
             <Route
               path="/mypage/reviews"
               element={<div>MyPage - Reviews</div>}

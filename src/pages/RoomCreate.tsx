@@ -3,10 +3,10 @@ import styled from "styled-components";
 import { useRoomStore } from "../stores/useRoomStore";
 import { useNavigate } from "react-router-dom";
 
-import RoomNameInput from "../components/room/create/RoomNameInput";
+import NameInput from "../components/NameInput";
 import MemberSelector from "../components/room/create/MemberSelector";
 import VisibilitySelector from "../components/room/create/VisibilitySelector";
-import CreateRoomButton from "../components/room/create/CreateRoomButton";
+import CreateButton from "../components/CreateButton";
 
 const RoomCreate = () => {
   const [roomName, setRoomName] = useState("");
@@ -89,7 +89,11 @@ const RoomCreate = () => {
 
   return (
     <FormContainer>
-      <RoomNameInput value={roomName} onChange={setRoomName} />
+      <NameInput
+        placeholder="방 이름을 입력하세요"
+        value={roomName}
+        onChange={setRoomName}
+      />
       <SearchRadioContainer>
         <MemberSelector
           search={search}
@@ -101,7 +105,7 @@ const RoomCreate = () => {
         />
         <VisibilitySelector visibility={visibility} onChange={setVisibility} />
       </SearchRadioContainer>
-      <CreateRoomButton onClick={handleCreateRoom} />
+      <CreateButton onClick={handleCreateRoom} content="생성" />
     </FormContainer>
   );
 };

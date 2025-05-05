@@ -1,14 +1,15 @@
 import styled from "styled-components";
 
-interface CreateRoomButtonProps {
+interface CreateButtonProps {
   onClick: () => void;
+  content: string;
 }
 
-const CreateRoomButton = ({ onClick }: CreateRoomButtonProps) => (
-  <Button onClick={onClick}>생성</Button>
+const CreateButton = ({ onClick, content }: CreateButtonProps) => (
+  <Button onClick={onClick}>{content}</Button>
 );
 
-export default CreateRoomButton;
+export default CreateButton;
 
 const Button = styled.button`
   margin-top: 2rem;

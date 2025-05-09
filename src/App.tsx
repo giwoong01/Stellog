@@ -14,6 +14,7 @@ import Room from "./pages/Room";
 import RoomCreate from "./pages/RoomCreate";
 import RoomDetail from "./pages/RoomDetail";
 import ReviewForm from "./pages/ReviewForm";
+import RoomCalendar from "./pages/RoomCalendar";
 
 const DefaultLayout = () => {
   return (
@@ -36,10 +37,7 @@ const App = () => {
             <Route path="/rooms" element={<Room />} />
             <Route path="/rooms/create" element={<RoomCreate />} />
             <Route path="/rooms/:roomId" element={<RoomDetail />} />
-            <Route
-              path="/rooms/:roomId/calendar"
-              element={<div>Rooms - Calendar</div>}
-            />
+            <Route path="/rooms/:roomId/calendar" element={<RoomCalendar />} />
             <Route
               path="/rooms/:roomId/route-calculation"
               element={<div>Rooms - Route Calculation</div>}

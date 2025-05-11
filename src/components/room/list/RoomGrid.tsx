@@ -62,7 +62,6 @@ const GridContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 2rem;
 `;
 
 const Grid = styled.div`

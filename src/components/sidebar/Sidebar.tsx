@@ -41,7 +41,7 @@ const Sidebar = () => {
       {
         label: "방 정보",
         Icon: StyledSubRoomInfoIcon,
-        path: `/rooms/${currentRoomId}/room-info`,
+        path: `/rooms/${currentRoomId}/info`,
       },
     ],
     routes: [

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,11 +9,16 @@ import { ThemeProvider } from "styled-components";
 import theme from "./styles/theme";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
-import Room from "./pages/Room";
+import Room from "./pages/RoomList";
 import RoomCreate from "./pages/RoomCreate";
 import RoomDetail from "./pages/RoomDetail";
 import ReviewForm from "./pages/ReviewForm";
 import RoomCalendar from "./pages/RoomCalendar";
+import RoomRoute from "./pages/RoomRouteList";
+import RoomRouteCreate from "./pages/RoomRouteCreate";
+import RoomRouteDetail from "./pages/RoomRouteDetail";
+import RoomInfo from "./pages/RoomInfo";
+import RoomEdit from "./pages/RoomEdit";
 
 const DefaultLayout = () => {
   return (
@@ -38,15 +42,18 @@ const App = () => {
             <Route path="/rooms/create" element={<RoomCreate />} />
             <Route path="/rooms/:roomId" element={<RoomDetail />} />
             <Route path="/rooms/:roomId/calendar" element={<RoomCalendar />} />
+            <Route path="/rooms/:roomId/routes" element={<RoomRoute />} />
             <Route
-              path="/rooms/:roomId/route-calculation"
-              element={<div>Rooms - Route Calculation</div>}
+              path="/rooms/:roomId/routes/create"
+              element={<RoomRouteCreate />}
             />
             <Route
-              path="/rooms/:roomId/room-info"
-              element={<div>Rooms - Room Info</div>}
+              path="/rooms/:roomId/routes/:routeId"
+              element={<RoomRouteDetail />}
             />
+            <Route path="/rooms/:roomId/info" element={<RoomInfo />} />
             <Route path="/rooms/:roomId/review" element={<ReviewForm />} />
+            <Route path="/rooms/:roomId/edit" element={<RoomEdit />} />
 
             <Route path="/routes" element={<div>routes</div>} />
             <Route

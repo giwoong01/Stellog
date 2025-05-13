@@ -36,12 +36,12 @@ const Sidebar = () => {
       {
         label: "동선 계산",
         Icon: StyledSubRouteCalculationIcon,
-        path: `/rooms/${currentRoomId}/route-calculation`,
+        path: `/rooms/${currentRoomId}/routes`,
       },
       {
         label: "방 정보",
         Icon: StyledSubRoomInfoIcon,
-        path: `/rooms/${currentRoomId}/room-info`,
+        path: `/rooms/${currentRoomId}/info`,
       },
     ],
     routes: [

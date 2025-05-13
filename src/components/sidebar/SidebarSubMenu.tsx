@@ -28,7 +28,14 @@ const SidebarSubMenu = ({ items, isOpen }: SidebarSubMenuProps) => {
   return (
     <SubMenuContainer isOpen={isOpen && shouldOpenSubMenu}>
       {items.map((item, index) => {
-        const isSelected = location.pathname === item.path;
+        let isSelected = location.pathname === item.path;
+        // 동선 계산 메뉴라면 /rooms/{roomId}/routes로 시작하는 모든 경로에서 활성화
+        if (item.path.includes("/routes")) {
+          const base = item.path;
+          if (location.pathname.startsWith(base)) {
+            isSelected = true;
+          }
+        }
 
         return (
           <SubMenuItem

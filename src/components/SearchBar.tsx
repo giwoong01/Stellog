@@ -1,20 +1,25 @@
 import styled from "styled-components";
-import { ReactComponent as SearchSVG } from "../../../assets/icons/search.svg";
+import { ReactComponent as SearchSVG } from "../assets/icons/search.svg";
 
-const RoomSearchBar = () => {
+export interface SearchBarProps {
+  placeholder: string;
+  onClick: () => void;
+}
+
+const SearchBar = ({ placeholder, onClick }: SearchBarProps) => {
   return (
     <SearchBarContainer>
-      <SearchInput type="text" placeholder="방을 검색해주세요." />
+      <SearchInput type="text" placeholder={placeholder} />
       <StyleSearchIcon
         onClick={() => {
-          alert("검색 기능은 아직 구현되지 않았습니다.");
+          onClick();
         }}
       />
     </SearchBarContainer>
   );
 };
 
-export default RoomSearchBar;
+export default SearchBar;
 
 const SearchBarContainer = styled.div`
   display: flex;

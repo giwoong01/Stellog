@@ -18,6 +18,7 @@ import RoomRoute from "./pages/RoomRouteList";
 import RoomRouteCreate from "./pages/RoomRouteCreate";
 import RoomRouteDetail from "./pages/RoomRouteDetail";
 import RoomInfo from "./pages/RoomInfo";
+import RoomEdit from "./pages/RoomEdit";
 
 const DefaultLayout = () => {
   return (
@@ -52,6 +53,7 @@ const App = () => {
             />
             <Route path="/rooms/:roomId/info" element={<RoomInfo />} />
             <Route path="/rooms/:roomId/review" element={<ReviewForm />} />
+            <Route path="/rooms/:roomId/edit" element={<RoomEdit />} />
 
             <Route path="/routes" element={<div>routes</div>} />
             <Route

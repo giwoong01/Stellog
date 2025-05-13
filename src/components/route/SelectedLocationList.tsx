@@ -44,7 +44,7 @@ const SelectedLocationList = ({
 
   return (
     <SelectedListWrapper>
-      {chunkArray(locations, 4).map((row, rowIdx) => (
+      {chunkArray(locations, 5).map((row, rowIdx) => (
         <SelectedRow key={rowIdx}>
           {row.map((loc) => (
             <SelectedItem key={loc.name}>

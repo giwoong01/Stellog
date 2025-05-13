@@ -8,11 +8,11 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
+const Pagination = ({
   currentPage,
   totalPages,
   onPageChange,
-}) => {
+}: PaginationProps) => {
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
@@ -48,7 +48,6 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1.5rem;
 
   @media (max-width: 768px) {
     gap: 0.5rem;

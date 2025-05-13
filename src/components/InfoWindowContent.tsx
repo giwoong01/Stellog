@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import theme from "../styles/theme";
 
@@ -7,10 +6,7 @@ interface InfoWindowContentProps {
   address: string;
 }
 
-const InfoWindowContent: React.FC<InfoWindowContentProps> = ({
-  name,
-  address,
-}) => {
+const InfoWindowContent = ({ name, address }: InfoWindowContentProps) => {
   return (
     <Container>
       <Name>{name}</Name>

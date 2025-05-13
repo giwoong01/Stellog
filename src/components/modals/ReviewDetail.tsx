@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { BiSolidLike } from "react-icons/bi";
 import { BiLike } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 const LikeSolidIcon = BiSolidLike as unknown as React.FC;
 const LikeIcon = BiLike as unknown as React.FC;
@@ -20,9 +22,13 @@ interface Review {
 interface ReviewDetailProps {
   review: Review;
   onBack: () => void;
+  isRoom?: boolean;
 }
 
-const ReviewDetail: React.FC<ReviewDetailProps> = ({ review, onBack }) => {
+const ReviewDetail = ({ review, onBack, isRoom }: ReviewDetailProps) => {
+  const navigate = useNavigate();
+  const { currentRoomId } = useRoomStore();
+
   const parseContent = (content: string) => {
     const urlPattern =
       /(https?:\/\/(?:storage\.googleapis\.com|s3\.amazonaws\.com)\/[^\s]+)/gi;
@@ -41,9 +47,29 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ review, onBack }) => {
     );
   };
 
+  const handleEditClick = () => {
+    navigate(`/rooms/${currentRoomId}/review`, {
+      state: {
+        title: review.title,
+        content: review.content,
+      },
+    });
+  };
+
   return (
     <>
-      <BackButton onClick={onBack}>◀ 목록으로</BackButton>
+      <ActionButtons>
+        <BackButton onClick={onBack}>◀ 목록으로</BackButton>
+        {isRoom && (
+          <ButtonContainer>
+            <EditButton onClick={handleEditClick}>수정</EditButton>
+            <DeleteButton onClick={() => console.log("삭제 버튼 클릭")}>
+              삭제
+            </DeleteButton>
+          </ButtonContainer>
+        )}
+      </ActionButtons>
+
       <ReviewDetailWrapper>
         <ReviewHeader></ReviewHeader>
         <ReviewDetailContent>
@@ -66,7 +92,6 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ review, onBack }) => {
 export default ReviewDetail;
 
 const BackButton = styled.button`
-  margin-bottom: 1rem;
   color: #036635;
   background: none;
   border: none;
@@ -139,4 +164,43 @@ const ReviewLike = styled.div`
   gap: 0.3rem;
   font-size: 0.8rem;
   cursor: pointer;
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+const EditButton = styled.button`
+  background-color: #036635;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #024a27;
+  }
+`;
+
+const DeleteButton = styled.button`
+  background-color: #ff0000;
+  color: white;
+  border: 1px solid #ff0000;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #cc0000;
+  }
 `;

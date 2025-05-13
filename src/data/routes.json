@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "title": "이렇게 가면 엄청 빠르네",
+    "start": "제주성산DT점",
+    "end": "제주애월DT점",
+    "cafeCount": 4,
+    "time": "1H 10M",
+    "distance": "10 KM",
+    "star": 2000
+  },
+  {
+    "id": 2,
+    "title": "경치 좋은 코스",
+    "start": "제주공항점",
+    "end": "제주중문DT점",
+    "cafeCount": 3,
+    "time": "50M",
+    "distance": "8 KM",
+    "star": 1500
+  },
+  {
+    "id": 3,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 4,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 5,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 6,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 7,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 8,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 9,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 10,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 11,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  },
+  {
+    "id": 12,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
+  }
+]

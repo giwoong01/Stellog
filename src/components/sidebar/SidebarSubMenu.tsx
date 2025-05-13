@@ -2,30 +2,45 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 
-interface SubMenuItem {
+interface SidebarSubMenuItem {
   label: string;
   Icon: React.ComponentType<{ isSelected: boolean }>;
   path: string;
 }
 
-interface SubMenuProps {
-  items: SubMenuItem[];
+interface SidebarSubMenuProps {
+  items: SidebarSubMenuItem[];
   isOpen: boolean;
 }
 
-const SidebarSubMenu: React.FC<SubMenuProps> = ({ items, isOpen }) => {
+const SidebarSubMenu = ({ items, isOpen }: SidebarSubMenuProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 서브 메뉴가 열려야 하는 조건
+  const shouldOpenSubMenu =
+    (location.pathname.startsWith("/rooms/") &&
+      location.pathname !== "/rooms" &&
+      location.pathname !== "/rooms/create") ||
+    location.pathname.startsWith("/routes") ||
+    location.pathname.startsWith("/mypage");
+
   return (
-    <SubMenuContainer isOpen={isOpen}>
+    <SubMenuContainer isOpen={isOpen && shouldOpenSubMenu}>
       {items.map((item, index) => {
-        const isSelected = location.pathname === item.path;
+        let isSelected = location.pathname === item.path;
+        // 동선 계산 메뉴라면 /rooms/{roomId}/routes로 시작하는 모든 경로에서 활성화
+        if (item.path.includes("/routes")) {
+          const base = item.path;
+          if (location.pathname.startsWith(base)) {
+            isSelected = true;
+          }
+        }
 
         return (
           <SubMenuItem
             key={index}
-            isOpen={isOpen}
+            isOpen={isOpen && shouldOpenSubMenu}
             delay={index * 0.15}
             onClick={() => navigate(item.path)}
           >

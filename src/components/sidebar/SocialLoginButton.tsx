@@ -9,13 +9,13 @@ interface SocialLoginButtonProps {
   socialType: "kakao" | "google";
 }
 
-const SocialLoginButton: React.FC<SocialLoginButtonProps> = ({
+const SocialLoginButton = ({
   socialType,
   iconSrc,
   backgroundColor,
   border,
   text,
-}) => {
+}: SocialLoginButtonProps) => {
   const handleKakaoLogin = () => {
     // 로그인 로직
   };

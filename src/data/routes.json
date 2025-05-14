@@ -118,5 +118,15 @@
     "time": "30M",
     "distance": "5 KM",
     "star": 900
+  },
+  {
+    "id": 13,
+    "title": "최단거리 코스",
+    "start": "제주한림DT점",
+    "end": "제주노형DT점",
+    "cafeCount": 2,
+    "time": "30M",
+    "distance": "5 KM",
+    "star": 900
   }
 ]

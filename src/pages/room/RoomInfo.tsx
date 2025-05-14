@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import RoomTitle from "../components/room/info/RoomTitle";
-import RoomUserInfo from "../components/room/info/RoomUserInfo";
-import RoomVisitStatus from "../components/room/info/RoomVisitStatus";
-import RoomVisitList from "../components/room/info/RoomVisitList";
-import { useRoomStore } from "../stores/useRoomStore";
+import RoomTitle from "../../components/room/info/RoomTitle";
+import RoomUserInfo from "../../components/room/info/RoomUserInfo";
+import RoomVisitStatus from "../../components/room/info/RoomVisitStatus";
+import RoomVisitList from "../../components/room/info/RoomVisitList";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 const dummyRoom = {
   name: "1인 제주도 스타벅스 방문",

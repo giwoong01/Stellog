@@ -48,12 +48,12 @@ const Sidebar = () => {
       {
         label: "내 동선",
         Icon: StyledSubMyRouteIcon,
-        path: "/routes/my-route",
+        path: "/routes/my",
       },
       {
         label: "저장한 동선",
         Icon: StyledSubSavedRoutesIcon,
-        path: "/routes/saved-routes",
+        path: "/routes/star",
       },
     ],
     mypage: [

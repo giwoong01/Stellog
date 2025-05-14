@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import SearchBar from "../components/SearchBar";
-import RoomGrid from "../components/room/list/RoomGrid";
-import Pagination from "../components/Pagination";
-import { useRoomStore } from "../stores/useRoomStore";
+import SearchBar from "../../components/SearchBar";
+import RoomGrid from "../../components/room/list/RoomGrid";
+import Pagination from "../../components/Pagination";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 const RoomList = () => {
   const { rooms } = useRoomStore();

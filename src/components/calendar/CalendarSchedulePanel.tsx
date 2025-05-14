@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import VisitedStarbucks from "./VisitedStarbucks";
 import ScheduleList from "./ScheduleList";
 import styled from "styled-components";
-import { CalendarData } from "../../pages/RoomCalendar";
+import { CalendarData } from "../../pages/room/RoomCalendar";
 
 interface CalendarSchedulePanelProps {
   selectedDate: Date;

@@ -1,14 +1,13 @@
 import styled from "styled-components";
-import useKakaoMap from "../hooks/useKakaoMap";
-import locations from "../data/locations.json";
-import { useRoomStore } from "../stores/useRoomStore";
-import SelectedLocationList from "../components/route/SelectedLocationList";
+import useKakaoMap from "../../hooks/useKakaoMap";
+import locations from "../../data/locations.json";
+import { useRoomStore } from "../../stores/useRoomStore";
+import SelectedLocationList from "../../components/route/SelectedLocationList";
 
-const RoomRouteDetail = () => {
+const RouteDetail = () => {
   const { currentRoomId } = useRoomStore();
 
   // RoomId + RouteId에 따른 동선 정보 API 호출 예정 -> 현재는 더미 데이터 사용
-
   useKakaoMap("map", locations, () => {}, locations, true);
 
   return (
@@ -24,7 +23,7 @@ const RoomRouteDetail = () => {
   );
 };
 
-export default RoomRouteDetail;
+export default RouteDetail;
 
 const DetailContainer = styled.div`
   position: relative;

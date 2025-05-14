@@ -1,4 +1,4 @@
-import { CalendarItem } from "../../pages/RoomCalendar";
+import { CalendarItem } from "../../pages/room/RoomCalendar";
 import { ReactComponent as VisitedStarbucksIconSVG } from "../../assets/icons/category.svg";
 import { ReactComponent as CoffeeIconSVG } from "../../assets/icons/coffee.svg";
 import styled from "styled-components";

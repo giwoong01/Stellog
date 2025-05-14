@@ -1,7 +1,7 @@
 import { format, addMonths, subMonths } from "date-fns";
 import styled, { css } from "styled-components";
 import useCalendar from "../../hooks/useCalendar";
-import { CalendarData } from "../../pages/RoomCalendar";
+import { CalendarData } from "../../pages/room/RoomCalendar";
 
 export const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
 

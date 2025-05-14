@@ -9,6 +9,11 @@ interface Location {
   longitude: number;
 }
 
+interface RouteData {
+  locations: Location[];
+  color: string;
+}
+
 const createMarkerImage = (
   width: number,
   height: number,
@@ -39,11 +44,159 @@ const useKakaoMap = (
   locations: Location[],
   onMarkerClick: (location: Location) => void,
   selectedLocations: Location[] = [],
-  isOptimized: boolean = false
+  isOptimized: boolean = false,
+  routesData?: RouteData[]
 ) => {
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const [isMapReady, setIsMapReady] = useState(false);
+
+  const createBaseMarker = (location: Location, map: any) => {
+    const markerPosition = new window.kakao.maps.LatLng(
+      location.latitude,
+      location.longitude
+    );
+
+    const markerImage = createMarkerImage(25, 25, undefined, false);
+
+    const marker = new window.kakao.maps.Marker({
+      position: markerPosition,
+      map: map,
+      image: markerImage,
+      title: location.name,
+    });
+
+    const infoWindow = new window.kakao.maps.InfoWindow({
+      content: renderToStaticMarkup(
+        <InfoWindowContent name={location.name} address={location.address} />
+      ),
+    });
+
+    window.kakao.maps.event.addListener(marker, "mouseover", () => {
+      marker.setImage(createMarkerImage(30, 30, undefined, false));
+      infoWindow.open(map, marker);
+    });
+
+    window.kakao.maps.event.addListener(marker, "mouseout", () => {
+      marker.setImage(markerImage);
+      infoWindow.close();
+    });
+
+    window.kakao.maps.event.addListener(marker, "click", () => {
+      infoWindow.close();
+      onMarkerClick(location);
+    });
+
+    return marker;
+  };
+
+  const createSelectedMarker = (
+    location: Location,
+    index: number,
+    map: any,
+    color: string = "#4ade80"
+  ) => {
+    const markerPosition = new window.kakao.maps.LatLng(
+      location.latitude,
+      location.longitude
+    );
+
+    const markerImage = createMarkerImage(30, 30, color, true);
+
+    const marker = new window.kakao.maps.Marker({
+      position: markerPosition,
+      map: map,
+      image: markerImage,
+      title: location.name,
+    });
+
+    const infoWindow = new window.kakao.maps.InfoWindow({
+      content: renderToStaticMarkup(
+        <InfoWindowContent name={location.name} address={location.address} />
+      ),
+    });
+
+    window.kakao.maps.event.addListener(marker, "mouseover", () => {
+      marker.setImage(createMarkerImage(35, 35, color, true));
+      infoWindow.open(map, marker);
+    });
+
+    window.kakao.maps.event.addListener(marker, "mouseout", () => {
+      marker.setImage(markerImage);
+      infoWindow.close();
+    });
+
+    return marker;
+  };
+
+  const createOrderOverlay = (
+    location: Location,
+    index: number,
+    map: any,
+    color: string = "#4ade80"
+  ) => {
+    const position = new window.kakao.maps.LatLng(
+      location.latitude,
+      location.longitude
+    );
+
+    const content = `<div style="background:${color};color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:bold;border:2px solid #fff;">${
+      index + 1
+    }</div>`;
+
+    const overlay = new window.kakao.maps.CustomOverlay({
+      position,
+      content,
+      yAnchor: 0.9,
+    });
+
+    overlay.setMap(map);
+    return overlay;
+  };
+
+  const createPolyline = (
+    locations: Location[],
+    map: any,
+    color: string = "#4ade80"
+  ) => {
+    const path = locations.map(
+      (loc) => new window.kakao.maps.LatLng(loc.latitude, loc.longitude)
+    );
+    const polyline = new window.kakao.maps.Polyline({
+      path,
+      strokeWeight: 5,
+      strokeColor: color,
+      strokeOpacity: 0.8,
+      strokeStyle: "solid",
+    });
+    polyline.setMap(map);
+    return polyline;
+  };
+
+  const removeExistingMarker = (location: Location) => {
+    const existingMarker = markersRef.current.find(
+      (marker) =>
+        marker instanceof window.kakao.maps.Marker &&
+        marker.getPosition().getLat() === location.latitude &&
+        marker.getPosition().getLng() === location.longitude
+    );
+
+    if (existingMarker) {
+      existingMarker.setMap(null);
+      const orderOverlays = markersRef.current.filter(
+        (element) =>
+          element instanceof window.kakao.maps.CustomOverlay &&
+          element.getPosition &&
+          element.getPosition().getLat() === location.latitude &&
+          element.getPosition().getLng() === location.longitude
+      );
+      orderOverlays.forEach((overlay) => overlay.setMap(null));
+      markersRef.current = markersRef.current.filter(
+        (element) =>
+          element !== existingMarker && !orderOverlays.includes(element)
+      );
+    }
+  };
 
   useEffect(() => {
     if (
@@ -80,95 +233,69 @@ const useKakaoMap = (
   useEffect(() => {
     if (!window.kakao || !window.kakao.maps || !mapRef.current || !isMapReady)
       return;
-    markersRef.current.forEach((marker) => marker.setMap(null));
+
+    markersRef.current.forEach((element) => {
+      if (
+        element instanceof window.kakao.maps.Marker ||
+        element instanceof window.kakao.maps.Polyline ||
+        element instanceof window.kakao.maps.CustomOverlay
+      ) {
+        element.setMap(null);
+      }
+    });
     markersRef.current = [];
 
     const map = mapRef.current;
+
     locations.forEach((location) => {
-      const markerPosition = new window.kakao.maps.LatLng(
-        location.latitude,
-        location.longitude
-      );
-
-      const isSelected = selectedLocations.find(
-        (l) =>
-          l.latitude === location.latitude && l.longitude === location.longitude
-      );
-
-      const markerImage = isSelected
-        ? createMarkerImage(30, 30, "#4ade80", true)
-        : createMarkerImage(25, 25, undefined, false);
-
-      const marker = new window.kakao.maps.Marker({
-        position: markerPosition,
-        map: map,
-        image: markerImage,
-        title: location.name,
-      });
-
-      if (isOptimized && isSelected) {
-        const selectedIdx = selectedLocations.findIndex(
-          (l) =>
-            l.latitude === location.latitude &&
-            l.longitude === location.longitude
-        );
-        const orderContent = `<div style="background:#4ade80;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:bold;border:2px solid #036635;">${
-          selectedIdx + 1
-        }</div>`;
-
-        const orderOverlay = new window.kakao.maps.CustomOverlay({
-          position: markerPosition,
-          content: orderContent,
-          yAnchor: 0.9,
-        });
-
-        orderOverlay.setMap(map);
-        markersRef.current.push(orderOverlay);
-      }
-
-      const infoWindow = new window.kakao.maps.InfoWindow({
-        content: renderToStaticMarkup(
-          <InfoWindowContent name={location.name} address={location.address} />
-        ),
-      });
-
-      window.kakao.maps.event.addListener(marker, "mouseover", () => {
-        marker.setImage(
-          isSelected
-            ? createMarkerImage(35, 35, "#4ade80", true)
-            : createMarkerImage(30, 30, undefined, false)
-        );
-        infoWindow.open(map, marker);
-      });
-
-      window.kakao.maps.event.addListener(marker, "mouseout", () => {
-        marker.setImage(markerImage);
-        infoWindow.close();
-      });
-
-      window.kakao.maps.event.addListener(marker, "click", () => {
-        infoWindow.close();
-        onMarkerClick(location);
-      });
-
+      const marker = createBaseMarker(location, map);
       markersRef.current.push(marker);
     });
 
-    if (isOptimized && selectedLocations.length > 1) {
-      const path = selectedLocations.map(
-        (loc) => new window.kakao.maps.LatLng(loc.latitude, loc.longitude)
-      );
-      const polyline = new window.kakao.maps.Polyline({
-        path,
-        strokeWeight: 5,
-        strokeColor: "#4ade80",
-        strokeOpacity: 0.8,
-        strokeStyle: "solid",
+    // 경로 데이터가 있는 경우 (선택적: RouteMyList, RouteStarList에서 사용)
+    if (routesData && routesData.length > 0) {
+      routesData.forEach((routeData) => {
+        const { locations: routeLocations, color } = routeData;
+
+        routeLocations.forEach((location, index) => {
+          removeExistingMarker(location);
+          const marker = createSelectedMarker(location, index, map, color);
+          const orderOverlay = createOrderOverlay(location, index, map, color);
+          markersRef.current.push(marker, orderOverlay);
+        });
+
+        if (routeLocations.length > 1) {
+          const polyline = createPolyline(routeLocations, map, color);
+          markersRef.current.push(polyline);
+        }
       });
-      polyline.setMap(map);
-      markersRef.current.push(polyline);
     }
-  }, [locations, onMarkerClick, isMapReady, selectedLocations, isOptimized]);
+    // 선택된 위치가 있는 경우
+    else if (selectedLocations.length > 0) {
+      selectedLocations.forEach((location, index) => {
+        removeExistingMarker(location);
+        const marker = createSelectedMarker(location, index, map);
+        markersRef.current.push(marker);
+
+        if (isOptimized) {
+          const orderOverlay = createOrderOverlay(location, index, map);
+          markersRef.current.push(orderOverlay);
+        }
+      });
+
+      if (selectedLocations.length > 1) {
+        const polyline = createPolyline(selectedLocations, map);
+        markersRef.current.push(polyline);
+      }
+    }
+  }, [
+    locations,
+    onMarkerClick,
+    isMapReady,
+    selectedLocations,
+    isOptimized,
+    routesData,
+  ]);
 };
 
 export default useKakaoMap;

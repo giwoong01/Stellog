@@ -1,4 +1,4 @@
-import { CalendarItem } from "../../pages/RoomCalendar";
+import { CalendarItem } from "../../pages/room/RoomCalendar";
 import { ReactComponent as ScheduleIconSVG } from "../../assets/icons/category.svg";
 import styled from "styled-components";
 import { useState } from "react";

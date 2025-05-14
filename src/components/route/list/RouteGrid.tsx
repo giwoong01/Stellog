@@ -1,8 +1,8 @@
 import styled from "styled-components";
+import RouteCard from "./RouteCard";
 import AddRouteCard from "./AddRouteCard";
 import { useNavigate } from "react-router-dom";
 import { useRoomStore } from "../../../stores/useRoomStore";
-import RouteCard from "./RouteCard";
 
 export interface Route {
   id: number;
@@ -18,9 +18,16 @@ export interface Route {
 interface RouteGridProps {
   currentPage: number;
   routes: Route[];
+  onClick: (routeId: number) => void;
+  showAddButton?: boolean;
 }
 
-const RouteGrid = ({ currentPage, routes }: RouteGridProps) => {
+const RouteGrid = ({
+  currentPage,
+  routes,
+  onClick,
+  showAddButton = false,
+}: RouteGridProps) => {
   const navigate = useNavigate();
   const { currentRoomId } = useRoomStore();
 
@@ -31,15 +38,15 @@ const RouteGrid = ({ currentPage, routes }: RouteGridProps) => {
   return (
     <GridContainer>
       <Grid>
-        {currentPage === 1 && <AddRouteCard onClick={handleAddRoute} />}
+        {showAddButton && currentPage === 1 && (
+          <AddRouteCard onClick={handleAddRoute} />
+        )}
 
         {routes.map((route) => (
           <RouteCard
             key={route.id}
             route={route}
-            onClick={() => {
-              navigate(`/rooms/${currentRoomId}/routes/${route.id}`);
-            }}
+            onClick={() => onClick(route.id)}
           />
         ))}
       </Grid>

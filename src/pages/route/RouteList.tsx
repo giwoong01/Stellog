@@ -1,15 +1,18 @@
 import { useState } from "react";
-import SearchBar from "../components/SearchBar";
-import RouteGrid from "../components/route/list/RouteGrid";
+import SearchBar from "../../components/SearchBar";
+import RouteGrid from "../../components/route/list/RouteGrid";
 import styled from "styled-components";
-import Pagination from "../components/Pagination";
-import routes from "../data/routes.json";
+import Pagination from "../../components/Pagination";
+import routes from "../../data/routes.json";
+import { useNavigate } from "react-router-dom";
 
-const RoomRouteList = () => {
+const RouteList = () => {
+  const navigate = useNavigate();
+
   const [currentPage, setCurrentPage] = useState(1);
-  const routesPerPage = currentPage === 1 ? 11 : 12;
-  const totalPages = Math.ceil((routes.length - 11) / 12) + 1;
-  const startIndex = currentPage === 1 ? 0 : 11 + (currentPage - 2) * 12;
+  const routesPerPage = 12;
+  const totalPages = Math.ceil((routes.length - 12) / 12) + 1;
+  const startIndex = currentPage === 1 ? 0 : 12 + (currentPage - 2) * 12;
   const currentRoutes = routes.slice(startIndex, startIndex + routesPerPage);
 
   return (
@@ -23,6 +26,8 @@ const RoomRouteList = () => {
         />
       </SearchBarWrapper>
 
+      <PopularRouteText>가장 인기있는 최적화 동선입니다.</PopularRouteText>
+
       <PaginationWrapper>
         {currentRoutes.length !== 0 && (
           <Pagination
@@ -34,13 +39,19 @@ const RoomRouteList = () => {
       </PaginationWrapper>
 
       <GridWrapper>
-        <RouteGrid currentPage={currentPage} routes={currentRoutes} />
+        <RouteGrid
+          currentPage={currentPage}
+          routes={currentRoutes}
+          onClick={(routeId) => {
+            navigate(`/routes/${routeId}`);
+          }}
+        />
       </GridWrapper>
     </PageWrapper>
   );
 };
 
-export default RoomRouteList;
+export default RouteList;
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -54,6 +65,14 @@ const SearchBarWrapper = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 2rem;
+`;
+
+const PopularRouteText = styled.div`
+  color: #0e0e0e;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 0.5rem 0 0 0;
 `;
 
 const PaginationWrapper = styled.div`

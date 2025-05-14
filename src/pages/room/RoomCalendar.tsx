@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Calendar from "../components/calendar/Calendar";
-import CalendarSchedulePanel from "../components/calendar/CalendarSchedulePanel";
+import Calendar from "../../components/calendar/Calendar";
+import CalendarSchedulePanel from "../../components/calendar/CalendarSchedulePanel";
 import { format } from "date-fns";
-import { useRoomStore } from "../stores/useRoomStore";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 export interface CalendarItem {
   name: string;

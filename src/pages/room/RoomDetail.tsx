@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import useKakaoMap from "../hooks/useKakaoMap";
-import locations from "../data/locations.json";
-import LocationDetailModal from "../components/modals/LocationDetailModal";
+import useKakaoMap from "../../hooks/useKakaoMap";
+import locations from "../../data/locations.json";
+import LocationDetailModal from "../../components/modals/LocationDetailModal";
 import styled from "styled-components";
-import { useRoomStore } from "../stores/useRoomStore";
+import { useRoomStore } from "../../stores/useRoomStore";
 
 const RoomDetail = () => {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);

@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useRoomStore } from "../stores/useRoomStore";
-import { useNavigate, useParams } from "react-router-dom";
+import { useRoomStore } from "../../stores/useRoomStore";
+import { useNavigate } from "react-router-dom";
 
-import NameInput from "../components/NameInput";
-import MemberSelector from "../components/room/create/MemberSelector";
-import VisibilitySelector from "../components/room/create/VisibilitySelector";
-import CreateButton from "../components/CreateButton";
-import CancelButton from "../components/CancelButton";
+import NameInput from "../../components/NameInput";
+import MemberSelector from "../../components/room/create/MemberSelector";
+import VisibilitySelector from "../../components/room/create/VisibilitySelector";
+import CreateButton from "../../components/CreateButton";
+import CancelButton from "../../components/CancelButton";
 
-const RoomEdit = () => {
-  const { roomId } = useParams<{ roomId: string }>();
-  const navigate = useNavigate();
-
-  const { rooms, updateRoom } = useRoomStore();
-  const currentRoomId = useRoomStore((state) => state.currentRoomId);
-  const setCurrentRoomTitle = useRoomStore(
-    (state) => state.setCurrentRoomTitle
-  );
-
+const RoomCreate = () => {
   const [roomName, setRoomName] = useState("");
   const [search, setSearch] = useState("");
   const [members, setMembers] = useState<
@@ -29,6 +20,13 @@ const RoomEdit = () => {
   >([]);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
 
+  const { addRoom } = useRoomStore();
+  const setCurrentRoomId = useRoomStore((state) => state.setCurrentRoomId);
+  const setCurrentRoomTitle = useRoomStore(
+    (state) => state.setCurrentRoomTitle
+  );
+  const navigate = useNavigate();
+
   const allMembers = [
     { id: 1, name: "홍길동", profileImage: "" },
     { id: 2, name: "김철수", profileImage: "" },
@@ -38,21 +36,9 @@ const RoomEdit = () => {
 
   const currenMember = { id: 0, name: "최기웅", profileImage: "" };
 
-  // 기존 방 정보 불러오기
   useEffect(() => {
-    if (!roomId) return;
-
-    const room = rooms.find((r) => r.id.toString() === roomId);
-    if (!room) {
-      alert("존재하지 않는 방입니다.");
-      navigate("/rooms");
-      return;
-    }
-
-    setRoomName(room.title);
-    setMembers(room.members || [currenMember]);
-    setVisibility(room.isPublic ? "public" : "private");
-  }, [roomId, rooms, navigate]);
+    setMembers([currenMember]);
+  }, []);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -80,29 +66,30 @@ const RoomEdit = () => {
     }
   };
 
-  const handleUpdateRoom = () => {
+  const handleCreateRoom = () => {
     if (!roomName.trim()) {
       alert("방 이름을 입력해주세요.");
       return;
     }
 
-    if (!roomId) return;
-
-    updateRoom({
-      id: parseFloat(roomId),
+    const id = Math.random();
+    addRoom({
+      id: id,
       title: roomName,
       members,
+      visitsCount: 0,
       isPublic: visibility === "public",
     });
 
+    setCurrentRoomId(id);
     setCurrentRoomTitle(roomName);
-    alert("방 정보가 수정되었습니다!");
-    navigate(`/rooms/${roomId}`);
+    alert("방이 생성되었습니다!");
+    setRoomName("");
+    navigate("/rooms");
   };
 
   return (
     <FormContainer>
-      <PageTitle>방 정보 수정</PageTitle>
       <NameInput
         placeholder="방 이름을 입력하세요"
         value={roomName}
@@ -120,17 +107,14 @@ const RoomEdit = () => {
         <VisibilitySelector visibility={visibility} onChange={setVisibility} />
       </SearchRadioContainer>
       <ButtonContainer>
-        <CreateButton onClick={handleUpdateRoom} content="수정" />
-        <CancelButton
-          onClick={() => navigate(`/rooms/${roomId}`)}
-          content="취소"
-        />
+        <CreateButton onClick={handleCreateRoom} content="생성" />
+        <CancelButton onClick={() => navigate("/rooms")} content="취소" />
       </ButtonContainer>
     </FormContainer>
   );
 };
 
-export default RoomEdit;
+export default RoomCreate;
 
 const FormContainer = styled.div`
   width: 100%;
@@ -139,12 +123,6 @@ const FormContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 80vh;
-`;
-
-const PageTitle = styled.h1`
-  color: #036635;
-  margin-bottom: 2rem;
-  text-align: center;
 `;
 
 const SearchRadioContainer = styled.div`

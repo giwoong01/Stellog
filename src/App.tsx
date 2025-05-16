@@ -22,6 +22,7 @@ import RouteList from "./pages/route/RouteList";
 import RouteDetail from "./pages/route/RouteDetail";
 import RouteStarList from "./pages/route/RouteStarList";
 import RouteMyList from "./pages/route/RouteMyList";
+import MyPage from "./pages/mypage/MyPage";
 
 const DefaultLayout = () => {
   return (
@@ -63,7 +64,7 @@ const App = () => {
             <Route path="/routes/my" element={<RouteMyList />} />
             <Route path="/routes/:routeId" element={<RouteDetail />} />
 
-            <Route path="/mypage" element={<div>mypage</div>} />
+            <Route path="/mypage" element={<MyPage />} />
             <Route
               path="/mypage/reviews"
               element={<div>MyPage - Reviews</div>}

@@ -23,6 +23,8 @@ import RouteDetail from "./pages/route/RouteDetail";
 import RouteStarList from "./pages/route/RouteStarList";
 import RouteMyList from "./pages/route/RouteMyList";
 import MyPage from "./pages/mypage/MyPage";
+import MyPageCalendar from "./pages/mypage/MyPageCalendar";
+import MyPageReview from "./pages/mypage/MyPageReview";
 
 const DefaultLayout = () => {
   return (
@@ -65,14 +67,8 @@ const App = () => {
             <Route path="/routes/:routeId" element={<RouteDetail />} />
 
             <Route path="/mypage" element={<MyPage />} />
-            <Route
-              path="/mypage/reviews"
-              element={<div>MyPage - Reviews</div>}
-            />
-            <Route
-              path="/mypage/calendar"
-              element={<div>MyPage - Calendar</div>}
-            />
+            <Route path="/mypage/reviews" element={<MyPageReview />} />
+            <Route path="/mypage/calendar" element={<MyPageCalendar />} />
           </Route>
         </Routes>
       </Router>

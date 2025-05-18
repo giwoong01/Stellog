@@ -22,6 +22,10 @@ import RouteList from "./pages/route/RouteList";
 import RouteDetail from "./pages/route/RouteDetail";
 import RouteStarList from "./pages/route/RouteStarList";
 import RouteMyList from "./pages/route/RouteMyList";
+import MyPage from "./pages/mypage/MyPage";
+import MyPageCalendar from "./pages/mypage/MyPageCalendar";
+import MyPageReview from "./pages/mypage/MyPageReview";
+import MemberPage from "./pages/mypage/MemberPage";
 
 const DefaultLayout = () => {
   return (
@@ -63,15 +67,10 @@ const App = () => {
             <Route path="/routes/my" element={<RouteMyList />} />
             <Route path="/routes/:routeId" element={<RouteDetail />} />
 
-            <Route path="/mypage" element={<div>mypage</div>} />
-            <Route
-              path="/mypage/reviews"
-              element={<div>MyPage - Reviews</div>}
-            />
-            <Route
-              path="/mypage/calendar"
-              element={<div>MyPage - Calendar</div>}
-            />
+            <Route path="/mypages" element={<MyPage />} />
+            <Route path="/mypages/reviews" element={<MyPageReview />} />
+            <Route path="/mypages/calendar" element={<MyPageCalendar />} />
+            <Route path="/mypages/members/:memberId" element={<MemberPage />} />
           </Route>
         </Routes>
       </Router>

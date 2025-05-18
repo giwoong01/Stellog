@@ -48,24 +48,24 @@ const Sidebar = () => {
       {
         label: "내 동선",
         Icon: StyledSubMyRouteIcon,
-        path: "/routes/my-route",
+        path: "/routes/my",
       },
       {
         label: "저장한 동선",
         Icon: StyledSubSavedRoutesIcon,
-        path: "/routes/saved-routes",
+        path: "/routes/star",
       },
     ],
     mypage: [
       {
         label: "내 리뷰",
         Icon: StyledSubReviewIcon,
-        path: "/mypage/reviews",
+        path: "/mypages/reviews",
       },
       {
         label: "내 캘린더",
         Icon: StyledSubCalendarIcon,
-        path: "/mypage/calendar",
+        path: "/mypages/calendar",
       },
     ],
   };
@@ -80,8 +80,8 @@ const Sidebar = () => {
       setOpenSubMenu("rooms");
     } else if (location.pathname.startsWith("/routes")) {
       setOpenSubMenu("routes");
-    } else if (location.pathname.startsWith("/mypage")) {
-      setOpenSubMenu("mypage");
+    } else if (location.pathname.startsWith("/mypages")) {
+      setOpenSubMenu("mypages");
     } else {
       setOpenSubMenu(null);
     }
@@ -121,9 +121,9 @@ const Sidebar = () => {
           label="마이페이지"
           icon={StyledMyPageIcon}
           subMenuItems={subMenuData.mypage}
-          basePath="/mypage"
-          isOpen={openSubMenu === "mypage"}
-          menu="mypage"
+          basePath="/mypages"
+          isOpen={openSubMenu === "mypages"}
+          menu="mypages"
           toggleSubMenu={toggleSubMenu}
         />
       </MenuContainer>

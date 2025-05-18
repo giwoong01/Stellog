@@ -1,9 +1,10 @@
 import styled from "styled-components";
-import RoomTitle from "../components/room/info/RoomTitle";
-import RoomUserInfo from "../components/room/info/RoomUserInfo";
-import RoomVisitStatus from "../components/room/info/RoomVisitStatus";
-import RoomVisitList from "../components/room/info/RoomVisitList";
-import { useRoomStore } from "../stores/useRoomStore";
+import RoomTitle from "../../components/room/info/RoomTitle";
+import RoomUserInfo from "../../components/room/info/RoomUserInfo";
+import RoomVisitStatus from "../../components/room/info/RoomVisitStatus";
+import RoomVisitList from "../../components/room/info/RoomVisitList";
+import { useRoomStore } from "../../stores/useRoomStore";
+import BadgeGrid from "../../components/BadgeGrid";
 
 const dummyRoom = {
   name: "1인 제주도 스타벅스 방문",
@@ -57,13 +58,7 @@ const RoomInfo = () => {
           ))}
         </LeftSection>
         <RightSection>
-          <BadgeCard>
-            <BadgeRow>
-              {dummyRoom.badges.map((badge) => (
-                <BadgeIcon key={badge} />
-              ))}
-            </BadgeRow>
-          </BadgeCard>
+          <BadgeGrid badges={dummyRoom.badges} />
           <StatusCard>
             <RoomVisitStatus
               visitCount={dummyRoom.visitCount}
@@ -120,20 +115,6 @@ const RightSection = styled.div`
   gap: 1rem;
 `;
 
-const BadgeCard = styled.div`
-  width: 100%;
-  background: #fff;
-  border-top: 0.3px solid #036635;
-  border-bottom: 1.5px solid #036635;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0.7rem 0.2rem 0.7rem 0.2rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1 1 0;
-`;
-
 const StatusCard = styled.div`
   width: 100%;
   background: #fff;
@@ -150,21 +131,4 @@ const SectionLabel = styled.div`
   font-size: 1.05rem;
   font-weight: 500;
   margin-bottom: 0.1rem;
-`;
-
-const BadgeRow = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem 0;
-  padding-right: 0.3rem;
-  justify-items: center;
-`;
-
-const BadgeIcon = styled.div`
-  width: 3rem;
-  height: 3rem;
-  background: #215c3c;
-  border-radius: 0.5rem;
-  display: inline-block;
 `;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import reviews from "../../data/review.json";
-import ReviewList from "./ReviewList";
-import ReviewDetail from "./ReviewDetail";
+import ReviewList from "../review/ReviewList";
+import ReviewDetail from "../review/ReviewDetail";
 
 interface Review {
   id: number;

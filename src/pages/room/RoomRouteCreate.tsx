@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useKakaoMap from "../hooks/useKakaoMap";
-import locations from "../data/locations.json";
-import RouteNameModal from "../components/modals/RouteNameModal";
-import { useRoomStore } from "../stores/useRoomStore";
+import useKakaoMap from "../../hooks/useKakaoMap";
+import locations from "../../data/locations.json";
+import RouteNameModal from "../../components/modals/RouteNameModal";
+import { useRoomStore } from "../../stores/useRoomStore";
 import styled from "styled-components";
-import SelectedLocationList from "../components/route/SelectedLocationList";
+import SelectedLocationList from "../../components/route/SelectedLocationList";
 
 const RoomRouteCreate = () => {
   const navigate = useNavigate();

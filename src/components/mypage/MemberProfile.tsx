@@ -1,21 +1,27 @@
 import React from "react";
 import styled from "styled-components";
 
-interface UserProfileProps {
+export interface MemberProfileProps {
   profileImage: string;
   name: string;
   age: number;
   followers: number;
   following: number;
+  onFollowersClick?: () => void;
+  onFollowingClick?: () => void;
+  isOwnProfile?: boolean;
 }
 
-export const UserProfile = ({
+export const MemberProfile = ({
   profileImage,
   name,
   age,
   followers,
   following,
-}: UserProfileProps) => {
+  onFollowersClick,
+  onFollowingClick,
+  isOwnProfile = true,
+}: MemberProfileProps) => {
   return (
     <ProfileContainer>
       <ProfileContent>
@@ -28,9 +34,13 @@ export const UserProfile = ({
             {name} {age}세 (만)
           </UserName>
           <FollowInfo>
-            <FollowText onClick={() => {}}>팔로워 {followers}</FollowText>
+            <FollowText onClick={onFollowersClick}>
+              팔로워 {followers}
+            </FollowText>
             <Dot>·</Dot>
-            <FollowText onClick={() => {}}>팔로잉 {following}</FollowText>
+            <FollowText onClick={onFollowingClick}>
+              팔로잉 {following}
+            </FollowText>
           </FollowInfo>
         </ProfileInfo>
       </ProfileContent>
@@ -85,6 +95,11 @@ const FollowInfo = styled.div`
 const FollowText = styled.span`
   color: #666666;
   cursor: pointer;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #036635;
+  }
 `;
 
 const Dot = styled.span`

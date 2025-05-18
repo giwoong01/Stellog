@@ -3,23 +3,25 @@ import styled from "styled-components";
 import googleIcon from "../../assets/icons/google.svg";
 import kakaoIcon from "../../assets/icons/kakao.svg";
 
-interface UserInfoProps {
+export interface MemberInfoProps {
   nickname: string;
   provider: string;
   email: string;
   userId: string;
   roomCount: number;
   reviewCount: number;
+  isOwnProfile?: boolean;
 }
 
-export const UserInfo = ({
+export const MemberInfo = ({
   nickname,
   provider,
   email,
   userId,
   roomCount,
   reviewCount,
-}: UserInfoProps) => {
+  isOwnProfile = true,
+}: MemberInfoProps) => {
   const getProviderIcon = (provider: string) => {
     switch (provider) {
       case "google":

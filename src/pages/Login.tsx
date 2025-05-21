@@ -13,14 +13,14 @@ const Login = () => {
       <Content>
         <StyledLogo />
         <SocialLoginButton
-          socialType="kakao"
+          provider="kakao"
           iconSrc={<KakaoSVG />}
           backgroundColor="#FEE500"
           border="#FEE500"
           text="카카오 로그인"
         />
         <SocialLoginButton
-          socialType="google"
+          provider="google"
           iconSrc={<GoogleSVG />}
           backgroundColor="#FFFFFF"
           border="#E0E0E0"

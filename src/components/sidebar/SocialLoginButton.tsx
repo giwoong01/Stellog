@@ -1,36 +1,24 @@
-import React from "react";
 import styled from "styled-components";
-
-interface SocialLoginButtonProps {
-  iconSrc: React.ReactNode;
-  backgroundColor: string;
-  border: string;
-  text: string;
-  socialType: "kakao" | "google";
-}
+import { SocialLoginButtonProps } from "../../types/components/socialLoginButton";
 
 const SocialLoginButton = ({
-  socialType,
+  provider,
   iconSrc,
   backgroundColor,
   border,
   text,
 }: SocialLoginButtonProps) => {
-  const handleKakaoLogin = () => {
-    // 로그인 로직
-  };
-
-  const handleGoogleLogin = () => {
-    // 로그인 로직
+  const handleLogin = () => {
+    window.location.href = `${process.env.REACT_APP_API_BASE_URL}/oauth2/login?provider=${provider}`;
   };
 
   return (
     <Button
       backgroundColor={backgroundColor}
       border={border}
-      onClick={socialType === "kakao" ? handleKakaoLogin : handleGoogleLogin}
+      onClick={handleLogin}
     >
-      <IconWrapper socialType={socialType === "kakao"}>{iconSrc}</IconWrapper>
+      <IconWrapper provider={provider === "kakao"}>{iconSrc}</IconWrapper>
       <Text>{text}</Text>
     </Button>
   );
@@ -56,19 +44,19 @@ const Button = styled.button<{ backgroundColor: string; border: string }>`
   }
 `;
 
-const IconWrapper = styled.div<{ socialType: boolean }>`
+const IconWrapper = styled.div<{ provider: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: ${({ socialType }) => (socialType ? "0" : "1rem")};
+  margin-right: ${({ provider }) => (provider ? "0" : "1rem")};
 
   svg {
-    width: ${({ socialType, theme }) =>
-      socialType
+    width: ${({ provider, theme }) =>
+      provider
         ? theme.icon.loginKakaoIconWidth
         : theme.icon.loginGoogleIconWidth};
-    height: ${({ socialType, theme }) =>
-      socialType
+    height: ${({ provider, theme }) =>
+      provider
         ? theme.icon.loginKakaoIconHeight
         : theme.icon.loginGoogleIconHeight};
   }

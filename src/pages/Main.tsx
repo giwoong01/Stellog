@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useKakaoMap from "../hooks/useKakaoMap";
 import LocationDetailModal from "../components/modals/LocationDetailModal";
 import locations from "../data/locations.json";
 import styled from "styled-components";
 import MemberInfo from "../components/MemberInfo";
+import { useAuthStore } from "../stores/useAuthStore";
 
 const Main = () => {
+  const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [memberInfo, setMemberInfo] = useState<{
-    name: string;
-    imageUrl: string;
-  } | null>(null);
+  const { isLoggedIn, memberInfo, fetchMemberInfo, logout } = useAuthStore();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchMemberInfo();
+    }
+  }, [isLoggedIn]);
 
   const handleMarkerClick = (location: any) => {
     setSelectedLocation(location);
@@ -26,9 +28,8 @@ const Main = () => {
     navigate("/login");
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setMemberInfo(null);
+  const handleLogout = async () => {
+    await logout();
   };
 
   useKakaoMap("map", locations, handleMarkerClick);
@@ -47,7 +48,7 @@ const Main = () => {
 
       <MemberInfo
         isLoggedIn={isLoggedIn}
-        userInfo={memberInfo}
+        memberInfo={memberInfo}
         onLogin={handleLogin}
         onLogout={handleLogout}
       />

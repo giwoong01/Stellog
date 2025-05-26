@@ -1,32 +1,29 @@
 import styled from "styled-components";
 import { ReactComponent as CoffeeIconSVG } from "../../../assets/icons/coffee.svg";
 import { ReactComponent as PersonIconSVG } from "../../../assets/icons/person.svg";
+import { RoomCardProps } from "../../../types/components/room";
 
-interface RoomCardProps {
-  title: string;
-  members: {
-    id: number;
-    name: string;
-    profileImage: string;
-  }[];
-  visitsCount: number;
-  onClick: () => void;
-}
-
-const RoomCard = ({ title, members, visitsCount, onClick }: RoomCardProps) => {
+const RoomCard = ({
+  roomName,
+  visitedStarbucksCount,
+  memberCount,
+  onClick,
+}: RoomCardProps) => {
   return (
     <Card onClick={onClick}>
-      <Title>{title}</Title>
+      <Title>{roomName}</Title>
       <IconContainer>
         <Meta>
           <StyledCoffeeIcon />
-          {visitsCount}
+          {visitedStarbucksCount}
         </Meta>
         <Meta>
-          {members.map(() => (
-            <StyledPersonIcon />
-          ))}
-          {members.length}
+          <div>
+            {Array.from({ length: memberCount }).map((_, idx) => (
+              <StyledPersonIcon key={idx} />
+            ))}
+          </div>
+          {memberCount}
         </Meta>
       </IconContainer>
     </Card>

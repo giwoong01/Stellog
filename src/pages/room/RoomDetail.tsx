@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import useKakaoMap from "../../hooks/useKakaoMap";
 import locations from "../../data/locations.json";
 import LocationDetailModal from "../../components/modals/LocationDetailModal";
 import styled from "styled-components";
 import { useRoomStore } from "../../stores/useRoomStore";
+import { useParams } from "react-router-dom";
 
 const RoomDetail = () => {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { currentRoomTitle } = useRoomStore();
+  const { roomId } = useParams();
+  const { room, setRoom } = useRoomStore();
+
+  useEffect(() => {
+    const loadRoomData = async () => {
+      if (roomId) {
+        await setRoom(Number(roomId));
+      }
+    };
+
+    loadRoomData();
+  }, [roomId]);
 
   const handleMarkerClick = (location: any) => {
     setSelectedLocation(location);
@@ -20,7 +32,7 @@ const RoomDetail = () => {
   return (
     <RoomDetailContainer>
       <RoomTitleContainer>
-        <RoomTitle>{currentRoomTitle}</RoomTitle>
+        <RoomTitle>{room?.roomName}</RoomTitle>
       </RoomTitleContainer>
 
       <MapContainer id="map" />

@@ -8,81 +8,68 @@ import MemberSelector from "../../components/room/create/MemberSelector";
 import VisibilitySelector from "../../components/room/create/VisibilitySelector";
 import CreateButton from "../../components/CreateButton";
 import CancelButton from "../../components/CancelButton";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { getMembers } from "../../api/member";
+import { MemberInfo } from "../../types/api/member";
 
 const RoomCreate = () => {
+  const navigate = useNavigate();
   const [roomName, setRoomName] = useState("");
   const [search, setSearch] = useState("");
-  const [members, setMembers] = useState<
-    { id: number; name: string; profileImage: string }[]
-  >([]);
-  const [filteredMembers, setFilteredMembers] = useState<
-    { id: number; name: string; profileImage: string }[]
-  >([]);
+  const [filteredMembers, setFilteredMembers] = useState<MemberInfo[]>([]);
+  const [members, setMembers] = useState<MemberInfo[]>([]);
+  const [otherMemberIds, setOtherMemberIds] = useState<number[]>([]);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
 
-  const { addRoom } = useRoomStore();
-  const setCurrentRoomId = useRoomStore((state) => state.setCurrentRoomId);
-  const setCurrentRoomTitle = useRoomStore(
-    (state) => state.setCurrentRoomTitle
-  );
-  const navigate = useNavigate();
+  const { createRoom } = useRoomStore();
+  const { memberInfo, fetchMemberInfo } = useAuthStore();
 
-  const allMembers = [
-    { id: 1, name: "홍길동", profileImage: "" },
-    { id: 2, name: "김철수", profileImage: "" },
-    { id: 3, name: "이영희", profileImage: "" },
-    { id: 4, name: "박민수", profileImage: "" },
-  ];
-
-  const currenMember = { id: 0, name: "최기웅", profileImage: "" };
-
-  useEffect(() => {
-    setMembers([currenMember]);
-  }, []);
-
-  const handleSearchChange = (value: string) => {
+  const handleSearchChange = async (value: string) => {
     setSearch(value);
-    if (value.trim() === "") {
+
+    try {
+      const response = await getMembers({ name: value });
+      setFilteredMembers(response);
+    } catch (error) {
       setFilteredMembers([]);
-    } else {
-      const filtered = allMembers.filter((member) =>
-        member.name.includes(value.trim())
-      );
-      setFilteredMembers(filtered);
+    }
+
+    if (value === "") {
+      setFilteredMembers([]);
+      return;
     }
   };
 
-  const toggleMember = (inputMember: {
-    id: number;
-    name: string;
-    profileImage: string;
-  }) => {
+  const toggleMember = (inputMember: MemberInfo) => {
     if (members.some((member) => member.id === inputMember.id)) {
       setMembers((prev) =>
         prev.filter((member) => member.id !== inputMember.id)
       );
+      setOtherMemberIds((prev) => prev.filter((id) => id !== inputMember.id));
     } else {
       setMembers((prev) => [...prev, inputMember]);
+      setOtherMemberIds((prev) => [...prev, inputMember.id]);
     }
   };
 
-  const handleCreateRoom = () => {
-    if (!roomName.trim()) {
-      alert("방 이름을 입력해주세요.");
+  useEffect(() => {
+    fetchMemberInfo();
+  }, []);
+
+  const handleCreateRoom = async () => {
+    if (!memberInfo?.id) {
+      alert("로그인 후 이용해주세요.");
       return;
     }
 
-    const id = Math.random();
-    addRoom({
-      id: id,
-      title: roomName,
-      members,
-      visitsCount: 0,
+    const memberIdList = [memberInfo.id, ...otherMemberIds];
+
+    await createRoom({
+      name: roomName,
       isPublic: visibility === "public",
+      memberIdList,
     });
 
-    setCurrentRoomId(id);
-    setCurrentRoomTitle(roomName);
     alert("방이 생성되었습니다!");
     setRoomName("");
     navigate("/rooms");
@@ -102,7 +89,7 @@ const RoomCreate = () => {
           filteredMembers={filteredMembers}
           selectedMembers={members}
           toggleMember={toggleMember}
-          currentMemberId={currenMember.id}
+          currentMemberId={memberInfo?.id || 0}
         />
         <VisibilitySelector visibility={visibility} onChange={setVisibility} />
       </SearchRadioContainer>

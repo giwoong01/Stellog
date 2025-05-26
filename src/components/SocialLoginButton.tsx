@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { SocialLoginButtonProps } from "../../types/components/socialLoginButton";
+import { SocialLoginButtonProps } from "../types/components/socialLoginButton";
 
 const SocialLoginButton = ({
   provider,

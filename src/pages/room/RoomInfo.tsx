@@ -5,9 +5,11 @@ import RoomVisitStatus from "../../components/room/info/RoomVisitStatus";
 import RoomVisitList from "../../components/room/info/RoomVisitList";
 import { useRoomStore } from "../../stores/useRoomStore";
 import BadgeGrid from "../../components/BadgeGrid";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const dummyRoom = {
-  name: "1인 제주도 스타벅스 방문",
   user: [
     { name: "최기웅1", isOwner: true },
     { name: "최기웅2", isOwner: false },
@@ -43,18 +45,31 @@ const dummyRoom = {
 };
 
 const RoomInfo = () => {
-  const { currentRoomTitle } = useRoomStore();
+  const { roomId } = useParams();
+  const { room, setRoom } = useRoomStore();
+  const { memberInfo, fetchMemberInfo } = useAuthStore();
+
+  useEffect(() => {
+    fetchMemberInfo();
+    if (roomId) {
+      setRoom(Number(roomId));
+    }
+  }, []);
 
   return (
     <Wrapper>
-      <RoomTitle title={currentRoomTitle || ""} />
+      <RoomTitle roomId={room?.roomId || 0} title={room?.roomName || ""} />
 
       <MainGrid>
         <SectionLabel>사용자</SectionLabel>
         <SectionLabel>배지</SectionLabel>
         <LeftSection>
-          {dummyRoom.user.map((user) => (
-            <RoomUserInfo key={user.name} user={user} isOwner={user.isOwner} />
+          {room?.roomMembers.map((member) => (
+            <RoomUserInfo
+              key={member.id}
+              user={member}
+              isOwner={member.id === memberInfo?.id}
+            />
           ))}
         </LeftSection>
         <RightSection>
@@ -104,6 +119,7 @@ const LeftSection = styled.div`
   border-top: 0.3px solid #036635;
   border-bottom: 1.5px solid #036635;
   padding: 0.7rem 0;
+  margin-top: 1rem;
   overflow-y: auto;
 `;
 

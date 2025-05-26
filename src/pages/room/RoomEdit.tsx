@@ -8,79 +8,88 @@ import MemberSelector from "../../components/room/create/MemberSelector";
 import VisibilitySelector from "../../components/room/create/VisibilitySelector";
 import CreateButton from "../../components/CreateButton";
 import CancelButton from "../../components/CancelButton";
+import { useAuthStore } from "../../stores/useAuthStore";
+import DeleteButton from "../../components/DeleteButton";
+import { getMembers } from "../../api/member";
+import { MemberInfo } from "../../types/api/member";
 
 const RoomEdit = () => {
-  const { roomId } = useParams<{ roomId: string }>();
+  const { roomId } = useParams();
   const navigate = useNavigate();
-
-  const { rooms, updateRoom } = useRoomStore();
-  const currentRoomId = useRoomStore((state) => state.currentRoomId);
-  const setCurrentRoomTitle = useRoomStore(
-    (state) => state.setCurrentRoomTitle
-  );
+  const { room, setRoom, updateRoom, deleteRoom } = useRoomStore();
 
   const [roomName, setRoomName] = useState("");
   const [search, setSearch] = useState("");
-  const [members, setMembers] = useState<
-    { id: number; name: string; profileImage: string }[]
-  >([]);
-  const [filteredMembers, setFilteredMembers] = useState<
-    { id: number; name: string; profileImage: string }[]
-  >([]);
+  const [filteredMembers, setFilteredMembers] = useState<MemberInfo[]>([]);
+  const [members, setMembers] = useState<MemberInfo[]>([]);
+  const [otherMemberIds, setOtherMemberIds] = useState<number[]>([]);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
+  const { memberInfo, fetchMemberInfo } = useAuthStore();
 
-  const allMembers = [
-    { id: 1, name: "홍길동", profileImage: "" },
-    { id: 2, name: "김철수", profileImage: "" },
-    { id: 3, name: "이영희", profileImage: "" },
-    { id: 4, name: "박민수", profileImage: "" },
-  ];
+  const handleSearchChange = async (value: string) => {
+    setSearch(value);
 
-  const currenMember = { id: 0, name: "최기웅", profileImage: "" };
-
-  // 기존 방 정보 불러오기
-  useEffect(() => {
-    if (!roomId) return;
-
-    const room = rooms.find((r) => r.id.toString() === roomId);
-    if (!room) {
-      alert("존재하지 않는 방입니다.");
-      navigate("/rooms");
-      return;
+    try {
+      const response = await getMembers({ name: value });
+      setFilteredMembers(response);
+    } catch (error) {
+      console.error("멤버 검색 중 오류 발생:", error);
+      setFilteredMembers([]);
     }
 
-    setRoomName(room.title);
-    setMembers(room.members || [currenMember]);
-    setVisibility(room.isPublic ? "public" : "private");
-  }, [roomId, rooms, navigate]);
-
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    if (value.trim() === "") {
+    if (value === "") {
       setFilteredMembers([]);
-    } else {
-      const filtered = allMembers.filter((member) =>
-        member.name.includes(value.trim())
-      );
-      setFilteredMembers(filtered);
+      return;
     }
   };
 
-  const toggleMember = (inputMember: {
-    id: number;
-    name: string;
-    profileImage: string;
-  }) => {
+  const toggleMember = (inputMember: MemberInfo) => {
     if (members.some((member) => member.id === inputMember.id)) {
       setMembers((prev) =>
         prev.filter((member) => member.id !== inputMember.id)
       );
+      setOtherMemberIds((prev) => prev.filter((id) => id !== inputMember.id));
     } else {
       setMembers((prev) => [...prev, inputMember]);
+      setOtherMemberIds((prev) => [...prev, inputMember.id]);
     }
   };
 
-  const handleUpdateRoom = () => {
+  useEffect(() => {
+    const loadInitialData = async () => {
+      await fetchMemberInfo();
+      if (roomId) {
+        await setRoom(Number(roomId));
+      }
+    };
+
+    loadInitialData();
+  }, [roomId]);
+
+  useEffect(() => {
+    if (room?.roomName) {
+      setRoomName(room.roomName);
+    }
+
+    if (room?.roomMembers) {
+      const initialMembers = room.roomMembers.map((member) => ({
+        id: member.id,
+        name: member.name,
+        email: "",
+        nickname: member.name,
+        imageUrl: "",
+      }));
+      setMembers(initialMembers);
+      setOtherMemberIds(room.roomMembers.map((member) => member.id));
+    }
+  }, [room]);
+
+  const handleUpdateRoom = async () => {
+    if (!memberInfo?.id) {
+      alert("로그인 후 이용해주세요.");
+      return;
+    }
+
     if (!roomName.trim()) {
       alert("방 이름을 입력해주세요.");
       return;
@@ -88,16 +97,25 @@ const RoomEdit = () => {
 
     if (!roomId) return;
 
-    updateRoom({
-      id: parseFloat(roomId),
-      title: roomName,
-      members,
+    const memberIdList = [memberInfo.id, ...otherMemberIds];
+
+    await updateRoom(Number(roomId), {
+      name: roomName,
       isPublic: visibility === "public",
+      memberIdList,
     });
 
-    setCurrentRoomTitle(roomName);
     alert("방 정보가 수정되었습니다!");
     navigate(`/rooms/${roomId}`);
+  };
+
+  const handleDeleteRoom = async () => {
+    if (!roomId) return;
+
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await deleteRoom(Number(roomId));
+      navigate(`/rooms`);
+    }
   };
 
   return (
@@ -115,7 +133,7 @@ const RoomEdit = () => {
           filteredMembers={filteredMembers}
           selectedMembers={members}
           toggleMember={toggleMember}
-          currentMemberId={currenMember.id}
+          currentMemberId={memberInfo?.id || 0}
         />
         <VisibilitySelector visibility={visibility} onChange={setVisibility} />
       </SearchRadioContainer>
@@ -125,6 +143,7 @@ const RoomEdit = () => {
           onClick={() => navigate(`/rooms/${roomId}`)}
           content="취소"
         />
+        <DeleteButton onClick={handleDeleteRoom} content="삭제" />
       </ButtonContainer>
     </FormContainer>
   );

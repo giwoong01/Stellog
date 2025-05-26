@@ -54,8 +54,8 @@ const MyPageCalendar = () => {
   });
 
   const dropdownOptions = rooms.map((room) => ({
-    id: room.id,
-    label: room.title,
+    id: room.roomId,
+    label: room.roomName,
   }));
 
   const calendarData = roomCalendarData[currentRoomId?.toString() || "1"] || {};

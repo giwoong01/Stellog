@@ -13,12 +13,14 @@ import { ReactComponent as SavedRoutesIconSVG } from "../../assets/icons/saved-r
 import { ReactComponent as MyPageIconSVG } from "../../assets/icons/mypage.svg";
 import { ReactComponent as ReviewIconSVG } from "../../assets/icons/review.svg";
 import SidebarMenu from "./SidebarMenu";
-import { useRoomStore } from "../../stores/useRoomStore";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentRoomId = useRoomStore((state) => state.currentRoomId);
+
+  const match = location.pathname.match(/^\/rooms\/(\d+)/);
+  const roomId = match ? match[1] : null;
+
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
 
   const subMenuData = {
@@ -26,22 +28,22 @@ const Sidebar = () => {
       {
         label: "지도",
         Icon: StyledSubMapIcon,
-        path: `/rooms/${currentRoomId}`,
+        path: `/rooms/${roomId}`,
       },
       {
         label: "캘린더",
         Icon: StyledSubCalendarIcon,
-        path: `/rooms/${currentRoomId}/calendar`,
+        path: `/rooms/${roomId}/calendar`,
       },
       {
         label: "동선 계산",
         Icon: StyledSubRouteCalculationIcon,
-        path: `/rooms/${currentRoomId}/routes`,
+        path: `/rooms/${roomId}/routes`,
       },
       {
         label: "방 정보",
         Icon: StyledSubRoomInfoIcon,
-        path: `/rooms/${currentRoomId}/info`,
+        path: `/rooms/${roomId}/info`,
       },
     ],
     routes: [

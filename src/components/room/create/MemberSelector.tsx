@@ -1,17 +1,12 @@
 import styled from "styled-components";
-
-interface Member {
-  id: number;
-  name: string;
-  profileImage: string;
-}
+import { MemberInfo } from "../../../types/api/member";
 
 interface MemberSelectorProps {
   search: string;
   onSearchChange: (value: string) => void;
-  filteredMembers: Member[];
-  selectedMembers: Member[];
-  toggleMember: (member: Member) => void;
+  filteredMembers: MemberInfo[];
+  selectedMembers: MemberInfo[];
+  toggleMember: (member: MemberInfo) => void;
   currentMemberId: number;
 }
 
@@ -32,17 +27,25 @@ const MemberSelector = ({
       />
     </SearchWrapper>
 
-    {filteredMembers.length > 0 && (
+    {filteredMembers && filteredMembers.length > 0 && (
       <FilteredMemberList>
         {filteredMembers
           .filter((m) => !selectedMembers.some((s) => s.id === m.id))
           .map((member) => (
             <FilteredMemberItem key={member.id}>
               <span>{member.name}</span>
-              <input type="checkbox" onChange={() => toggleMember(member)} />
+              <input
+                type="checkbox"
+                onChange={() => toggleMember(member)}
+                checked={selectedMembers.some((s) => s.id === member.id)}
+              />
             </FilteredMemberItem>
           ))}
       </FilteredMemberList>
+    )}
+
+    {filteredMembers && filteredMembers.length === 0 && search && (
+      <NoResults>검색 결과가 없습니다.</NoResults>
     )}
 
     {selectedMembers.length > 0 && (
@@ -95,6 +98,8 @@ const FilteredMemberList = styled.ul`
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid #036635;
+  max-height: 200px;
+  overflow-y: auto;
 `;
 
 const FilteredMemberItem = styled.li`
@@ -102,6 +107,10 @@ const FilteredMemberItem = styled.li`
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
+  cursor: pointer;
+  &:hover {
+    background-color: #f5f5f5;
+  }
 `;
 
 const MemberList = styled.ul`
@@ -119,4 +128,12 @@ const MemberItem = styled.li`
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
+`;
+
+const NoResults = styled.div`
+  width: 50%;
+  padding: 0.5rem 0;
+  text-align: center;
+  color: #666;
+  border-bottom: 1px solid #036635;
 `;

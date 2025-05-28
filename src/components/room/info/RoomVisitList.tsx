@@ -2,14 +2,9 @@ import styled from "styled-components";
 import { ReactComponent as CoffeeIconSVG } from "../../../assets/icons/coffee.svg";
 import { useState } from "react";
 import Pagination from "../../Pagination";
+import { RoomVisitListProps, Visit } from "../../../types/components/room";
 
-interface Visit {
-  memo: string;
-  date: string;
-  store: string;
-}
-
-const RoomVisitList = ({ visits }: { visits: Visit[] }) => {
+const RoomVisitList = ({ visits }: RoomVisitListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const visitsPerPage = 6;
   const totalPages = Math.ceil(visits.length / visitsPerPage);
@@ -39,16 +34,16 @@ const RoomVisitList = ({ visits }: { visits: Visit[] }) => {
   );
 };
 
-const VisitItem = ({ memo, date, store }: Visit) => (
+const VisitItem = ({ title, date, starbucksName }: Visit) => (
   <VisitItemWrapper>
     <Left>
       <StyledCoffeeIcon />
-      <MemoText>{memo}</MemoText>
+      <MemoText>{title}</MemoText>
     </Left>
 
     <Right>
       <DateText>{date}</DateText>
-      <StoreText>{store}</StoreText>
+      <StoreText>{starbucksName}</StoreText>
     </Right>
   </VisitItemWrapper>
 );

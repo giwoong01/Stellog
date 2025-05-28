@@ -1,15 +1,6 @@
-export interface Room {
-  roomId: number;
-  roomName: string;
-  roomMembers: {
-    id: number;
-    name: string;
-  };
-}
-
 export interface Rooms {
-  roomId: number;
-  roomName: string;
+  id: number;
+  name: string;
   memberCount: number;
   visitedStarbucksCount: number;
 }
@@ -29,4 +20,18 @@ export interface RoomCardProps {
 export interface RoomTitleProps {
   roomId: number;
   title: string;
+}
+
+export interface RoomVisitListProps {
+  visits: {
+    title: string;
+    date: string;
+    starbucksName: string;
+  }[];
+}
+
+export interface Visit {
+  title: string;
+  date: string;
+  starbucksName: string;
 }

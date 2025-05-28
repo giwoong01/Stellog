@@ -13,7 +13,7 @@ const MemberInfo = ({
         <>
           {memberInfo && (
             <>
-              <MemberImg src={memberInfo.imageUrl} alt={memberInfo.name} />
+              <MemberImg src={memberInfo.profileImgUrl} alt={memberInfo.name} />
               <MemberName>{memberInfo.name}님</MemberName>
             </>
           )}

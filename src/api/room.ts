@@ -30,7 +30,7 @@ export const getRooms = async () => {
     `${process.env.REACT_APP_API_BASE_URL}/rooms`
   );
 
-  return response.data.data.roomList;
+  return response.data.data.rooms;
 };
 
 export const getRoom = async (roomId: number) => {

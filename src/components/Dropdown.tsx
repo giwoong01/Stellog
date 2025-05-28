@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 interface DropdownOption {
   id: number;
-  label: string;
+  name: string;
 }
 
 interface DropdownProps {
@@ -33,7 +33,7 @@ const Dropdown = ({
   return (
     <Container width={width}>
       <Button onClick={() => setIsOpen(!isOpen)}>
-        {selectedOption?.label || placeholder}
+        {selectedOption?.name || placeholder}
         <Arrow isOpen={isOpen}>▼</Arrow>
       </Button>
       {isOpen && (
@@ -44,7 +44,7 @@ const Dropdown = ({
               onClick={() => handleSelect(option.id)}
               isSelected={option.id === value}
             >
-              {option.label}
+              {option.name}
             </Item>
           ))}
         </List>

@@ -24,7 +24,7 @@ export interface RoomCalendarData {
 }
 
 const MyPageCalendar = () => {
-  const { rooms, currentRoomId, setCurrentRoomId } = useRoomStore();
+  const { rooms, currentRoomId } = useRoomStore();
   const navigate = useNavigate();
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState<Date | null>(today);
@@ -54,8 +54,8 @@ const MyPageCalendar = () => {
   });
 
   const dropdownOptions = rooms.map((room) => ({
-    id: room.roomId,
-    label: room.roomName,
+    id: room.id,
+    label: room.name,
   }));
 
   const calendarData = roomCalendarData[currentRoomId?.toString() || "1"] || {};
@@ -118,12 +118,12 @@ const MyPageCalendar = () => {
 
   return (
     <Container>
-      <Dropdown
+      {/* <Dropdown
         options={dropdownOptions}
         value={currentRoomId}
         onChange={setCurrentRoomId}
         placeholder="방 선택"
-      />
+      /> */}
       <Calendar
         onDateClick={setSelectedDate}
         selectedDate={selectedDate ?? today}

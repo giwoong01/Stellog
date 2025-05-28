@@ -18,12 +18,12 @@ const RoomGrid = ({ currentPage, rooms }: RoomGridProps) => {
 
         {rooms.map((room) => (
           <RoomCard
-            key={room.roomId}
-            roomName={room.roomName}
+            key={room.id}
+            roomName={room.name}
             visitedStarbucksCount={room.visitedStarbucksCount}
             memberCount={room.memberCount}
             onClick={() => {
-              navigate(`/rooms/${room.roomId}`);
+              navigate(`/rooms/${room.id}`);
             }}
           />
         ))}

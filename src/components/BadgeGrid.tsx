@@ -1,19 +1,24 @@
 import styled from "styled-components";
-
-interface BadgeGridProps {
-  badges: number[];
-  size?: "small" | "medium" | "large";
-}
+import { BadgeGridProps } from "../types/components/badge";
 
 const BadgeGrid = ({ badges }: BadgeGridProps) => {
   return (
     <Container>
       <BadgeCard>
-        <BadgeRow>
-          {badges.map((badge) => (
-            <BadgeIcon key={badge} />
-          ))}
-        </BadgeRow>
+        {badges.length > 0 ? (
+          <BadgeRow>
+            {badges.map((badge) => (
+              <BadgeIcon key={badge} />
+            ))}
+          </BadgeRow>
+        ) : (
+          <EmptyMessage>
+            배지가 없습니다.
+            <br />
+            <br />
+            스타벅스를 방문하여 리뷰를 작성하면 배지를 얻을 수 있습니다.
+          </EmptyMessage>
+        )}
       </BadgeCard>
     </Container>
   );
@@ -68,4 +73,15 @@ const BadgeIcon = styled.div`
   background: #215c3c;
   border-radius: 0.5rem;
   display: inline-block;
+`;
+
+const EmptyMessage = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
 `;

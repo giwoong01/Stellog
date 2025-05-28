@@ -3,33 +3,51 @@ import styled from "styled-components";
 import { BiSolidLike } from "react-icons/bi";
 import { BiLike } from "react-icons/bi";
 import Pagination from "../Pagination";
-import { useNavigate } from "react-router-dom";
-import { useRoomStore } from "../../stores/useRoomStore";
+import { useNavigate, useParams } from "react-router-dom";
+import { ReviewListProps } from "../../types/components/review";
 
 const LikeSolidIcon = BiSolidLike as unknown as React.FC;
 const LikeIcon = BiLike as unknown as React.FC;
 
-interface Review {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  date: string;
-  likes: number;
-  imageUrl: string;
-  isLiked: boolean;
-}
-
-interface ReviewListProps {
-  reviews: Review[];
-  onSelectReview: (review: Review) => void;
-  isRoom?: boolean;
-}
-
-const ReviewList = ({ reviews, onSelectReview, isRoom }: ReviewListProps) => {
+const ReviewList = ({
+  reviews,
+  onSelectReview,
+  isRoom,
+  isLoading,
+  locationId,
+  onToggleLike,
+  likeLoadingId,
+}: ReviewListProps) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const { currentRoomId } = useRoomStore();
+  const { roomId } = useParams();
+
+  if (isRoom && !isLoading && reviews.length === 0) {
+    return (
+      <>
+        {isRoom && (
+          <ButtonContainer>
+            <WriteReviewButton
+              onClick={() =>
+                navigate(`/rooms/${roomId}/review`, {
+                  state: {
+                    starbucksId: locationId,
+                  },
+                })
+              }
+            >
+              리뷰 작성
+            </WriteReviewButton>
+          </ButtonContainer>
+        )}
+        <EmptyMessage>리뷰가 없습니다.</EmptyMessage>
+      </>
+    );
+  }
+
+  if (!isLoading && reviews.length === 0) {
+    return <EmptyMessage>리뷰가 없습니다.</EmptyMessage>;
+  }
 
   const reviewsPerPage = 4;
   const totalPages = Math.ceil(reviews.length / reviewsPerPage);
@@ -51,7 +69,13 @@ const ReviewList = ({ reviews, onSelectReview, isRoom }: ReviewListProps) => {
       {isRoom && (
         <ButtonContainer>
           <WriteReviewButton
-            onClick={() => navigate(`/rooms/${currentRoomId}/review`)}
+            onClick={() =>
+              navigate(`/rooms/${roomId}/review`, {
+                state: {
+                  starbucksId: locationId,
+                },
+              })
+            }
           >
             리뷰 작성
           </WriteReviewButton>
@@ -60,7 +84,7 @@ const ReviewList = ({ reviews, onSelectReview, isRoom }: ReviewListProps) => {
 
       {currentReviews.map((review) => (
         <ReviewBox key={review.id} onClick={() => onSelectReview(review)}>
-          <Thumbnail src={review.imageUrl} alt="review" />
+          <Thumbnail src={review.mainImgUrl} alt="review" />
           <ReviewContent>
             <div>
               <ReviewTitle>{review.title}</ReviewTitle>
@@ -69,11 +93,22 @@ const ReviewList = ({ reviews, onSelectReview, isRoom }: ReviewListProps) => {
             <ReviewFooter>
               <ReviewInfo>
                 작성자: {review.author} <br />
-                {review.date}
+                {review.visitedAt.split("T")[0]}
               </ReviewInfo>
-              <ReviewLike>
-                {review.isLiked ? <LikeSolidIcon /> : <LikeIcon />}
-                {review.likes}
+              <ReviewLike
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!likeLoadingId || likeLoadingId !== review.id) {
+                    onToggleLike && onToggleLike(review.id, review.isLike);
+                  }
+                }}
+                style={{
+                  opacity: likeLoadingId === review.id ? 0.5 : 1,
+                  pointerEvents: likeLoadingId === review.id ? "none" : "auto",
+                }}
+              >
+                {review.isLike ? <LikeSolidIcon /> : <LikeIcon />}
+                {review.likeCount}
               </ReviewLike>
             </ReviewFooter>
           </ReviewContent>
@@ -213,4 +248,17 @@ const ReviewLike = styled.div`
   align-items: center;
   gap: 0.3rem;
   font-size: 0.8rem;
+  cursor: pointer;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+`;
+
+const EmptyMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 `;

@@ -25,8 +25,6 @@ interface RoomStore {
   createRoom: (room: RoomCreateRequest) => Promise<void>;
   updateRoom: (roomId: number, updatedRoom: RoomUpdateRequest) => Promise<void>;
   deleteRoom: (roomId: number) => Promise<void>;
-  setCurrentRoomId: (roomId: number | null) => void;
-  setCurrentRoomTitle: (roomTitle: string | null) => void;
 }
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
@@ -55,20 +53,15 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   updateRoom: async (roomId, updatedRoom) => {
     const latest = await updateRoom(roomId, updatedRoom);
     set((state) => ({
-      rooms: state.rooms.map((room) =>
-        room.roomId === roomId ? latest : room
-      ),
-      room: state.room && state.room.roomId === roomId ? latest : state.room,
+      rooms: state.rooms.map((room) => (room.id === roomId ? latest : room)),
+      room: state.room && state.room.id === roomId ? latest : state.room,
     }));
   },
 
   deleteRoom: async (roomId) => {
     await deleteRoom(roomId);
     set((state) => ({
-      rooms: state.rooms.filter((room) => room.roomId !== roomId),
+      rooms: state.rooms.filter((room) => room.id !== roomId),
     }));
   },
-
-  setCurrentRoomId: (roomId) => set({ currentRoomId: roomId }),
-  setCurrentRoomTitle: (roomTitle) => set({ currentRoomTitle: roomTitle }),
 }));

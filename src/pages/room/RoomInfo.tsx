@@ -9,41 +9,6 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
 
-const dummyRoom = {
-  user: [
-    { name: "최기웅1", isOwner: true },
-    { name: "최기웅2", isOwner: false },
-    { name: "최기웅3", isOwner: false },
-    { name: "최기웅4", isOwner: false },
-    { name: "최기웅5", isOwner: false },
-    { name: "최기웅6", isOwner: false },
-    { name: "최기웅7", isOwner: false },
-    { name: "최기웅8", isOwner: false },
-    { name: "최기웅9", isOwner: false },
-    { name: "최기웅10", isOwner: false },
-    { name: "최기웅11", isOwner: false },
-    { name: "최기웅12", isOwner: false },
-    { name: "최기웅13", isOwner: false },
-    { name: "최기웅14", isOwner: false },
-    { name: "최기웅15", isOwner: false },
-    { name: "최기웅16", isOwner: false },
-  ],
-  badges: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-  visitCount: 10,
-  totalCount: 33,
-  visits: [
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-  ],
-};
-
 const RoomInfo = () => {
   const { roomId } = useParams();
   const { room, setRoom } = useRoomStore();
@@ -58,7 +23,7 @@ const RoomInfo = () => {
 
   return (
     <Wrapper>
-      <RoomTitle roomId={room?.roomId || 0} title={room?.roomName || ""} />
+      <RoomTitle roomId={room?.id || 0} title={room?.name || ""} />
 
       <MainGrid>
         <SectionLabel>사용자</SectionLabel>
@@ -73,17 +38,14 @@ const RoomInfo = () => {
           ))}
         </LeftSection>
         <RightSection>
-          <BadgeGrid badges={dummyRoom.badges} />
+          <BadgeGrid badges={room?.badges || []} />
           <StatusCard>
-            <RoomVisitStatus
-              visitCount={dummyRoom.visitCount}
-              totalCount={dummyRoom.totalCount}
-            />
+            <RoomVisitStatus visitCount={room?.visitedStarbucksCount || 0} />
           </StatusCard>
         </RightSection>
       </MainGrid>
 
-      <RoomVisitList visits={dummyRoom.visits} />
+      <RoomVisitList visits={room?.reviews || []} />
     </Wrapper>
   );
 };

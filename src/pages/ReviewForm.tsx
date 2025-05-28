@@ -1,35 +1,88 @@
 import styled from "styled-components";
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NameInput from "../components/NameInput";
 import TextAreaInput from "../components/review/TextAreaInput";
 import CreateButton from "../components/CreateButton";
+import DatePickerInput from "../components/review/DatePickerInput";
+import { createReview, updateReview } from "../api/review";
+import { uploadImage } from "../api/image";
 
 const ReviewForm = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { state } = location;
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [reviewName, setReviewName] = useState(state?.title || "");
-  const [content, setContent] = useState(state?.content || "");
-  const [visitDate, setVisitDate] = useState<Date | null>(null);
+  const navigate = useNavigate();
+  const { roomId } = useParams();
+  const location = useLocation();
+  const reviewId = location.state?.id;
+  const starbucksId = location.state?.starbucksId;
+  const isEdit = location.state?.isEdit;
+
+  const [reviewName, setReviewName] = useState(location.state?.title || "");
+  const [content, setContent] = useState(location.state?.content || "");
+  const [visitedAt, setVisitedAt] = useState<Date | null>(
+    location.state?.visitedAt || null
+  );
 
   const handleAddPictureButtonClick = () => {
-    console.log("추가 버튼 클릭");
+    fileInputRef.current?.click();
   };
 
-  const handleCreateReviewButtonClick = () => {
-    console.log("리뷰 생성 버튼 클릭");
-    console.log("리뷰 제목:", reviewName);
-    console.log("리뷰 내용:", content);
-    console.log("방문 날짜:", visitDate);
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const imageUrl = await uploadImage(file);
+      setContent((prev: string) => prev + `\n${imageUrl}\n`);
+    } catch (err) {
+      alert("이미지 업로드에 실패했습니다.");
+    }
+  };
+
+  function extractFirstImageUrl(content: string): string | undefined {
+    const urlPattern =
+      /(https?:\/\/(?:storage\.googleapis\.com|s3\.amazonaws\.com)\/[^\s]+)/gi;
+    const match = content.match(urlPattern);
+    return match ? match[0] : undefined;
+  }
+
+  const handleCreateReviewButtonClick = async () => {
+    if (!reviewName || !content || !visitedAt) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
+
+    const mainImgUrl = extractFirstImageUrl(content);
+
+    try {
+      const reviewData = {
+        title: reviewName,
+        content,
+        visitedAt,
+        starbucksId,
+        mainImgUrl,
+      };
+
+      if (isEdit) {
+        await updateReview(reviewId, reviewData);
+      } else {
+        await createReview(Number(roomId), reviewData);
+      }
+
+      alert("리뷰가 성공적으로 저장되었습니다!");
+      navigate(-1);
+    } catch (e) {
+      alert("리뷰 저장에 실패했습니다.");
+    }
   };
 
   const handleBackButtonClick = () => {
     navigate(-1);
   };
+
+  if (!starbucksId) {
+    return <div>잘못된 접근입니다.</div>;
+  }
 
   return (
     <FormContainer>
@@ -41,14 +94,17 @@ const ReviewForm = () => {
         value={reviewName}
         onChange={setReviewName}
       />
-      <DatePickerContainer>
-        <DatePicker
-          selected={visitDate}
-          onChange={(date) => setVisitDate(date)}
-          placeholderText="방문 날짜를 선택하세요"
-          dateFormat="yyyy-MM-dd"
-        />
-      </DatePickerContainer>
+      <DatePickerInput
+        selected={visitedAt}
+        onChange={(date) => setVisitedAt(date)}
+        placeholder="방문 날짜를 선택하세요"
+      />
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+      />
       <TextAreaContainer>
         <TextAreaInput
           value={content}
@@ -89,26 +145,6 @@ const BackButton = styled.button`
 
   &:hover {
     text-decoration: underline;
-  }
-`;
-
-const DatePickerContainer = styled.div`
-  position: relative;
-  width: 40%;
-  display: flex;
-  justify-content: end;
-  margin-bottom: 2rem;
-
-  input {
-    padding: 0.7rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    outline: none;
-
-    &:focus {
-      border-color: #036635;
-    }
   }
 `;
 

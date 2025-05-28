@@ -67,8 +67,8 @@ const RoomEdit = () => {
   }, [roomId]);
 
   useEffect(() => {
-    if (room?.roomName) {
-      setRoomName(room.roomName);
+    if (room?.name) {
+      setRoomName(room.name);
     }
 
     if (room?.roomMembers) {
@@ -77,7 +77,7 @@ const RoomEdit = () => {
         name: member.name,
         email: "",
         nickname: member.name,
-        imageUrl: "",
+        profileImgUrl: "",
       }));
       setMembers(initialMembers);
       setOtherMemberIds(room.roomMembers.map((member) => member.id));

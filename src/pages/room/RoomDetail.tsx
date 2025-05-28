@@ -32,7 +32,7 @@ const RoomDetail = () => {
   return (
     <RoomDetailContainer>
       <RoomTitleContainer>
-        <RoomTitle>{room?.roomName}</RoomTitle>
+        <RoomTitle>{room?.name}</RoomTitle>
       </RoomTitleContainer>
 
       <MapContainer id="map" />
@@ -43,6 +43,7 @@ const RoomDetail = () => {
           onClose={() => setIsModalOpen(false)}
           location={selectedLocation}
           isRoom={true}
+          roomId={Number(roomId)}
         />
       )}
     </RoomDetailContainer>

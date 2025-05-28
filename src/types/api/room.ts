@@ -1,18 +1,26 @@
 export interface Rooms {
-  roomId: number;
-  roomName: string;
+  id: number;
+  name: string;
   memberCount: number;
   visitedStarbucksCount: number;
 }
 
 export interface Room {
-  roomId: number;
-  roomName: string;
+  id: number;
+  name: string;
+  isOwner: boolean;
   roomMembers: {
     id: number;
     name: string;
   }[];
-  ownerId: number;
+  visitedStarbucksCount: number;
+  badges: number[];
+  reviews: {
+    id: number;
+    title: string;
+    date: string;
+    starbucksName: string;
+  }[];
 }
 
 export interface RoomCreateRequest {

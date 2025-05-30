@@ -2,32 +2,23 @@ import React from "react";
 import styled from "styled-components";
 import { BiSolidLike } from "react-icons/bi";
 import { BiLike } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
-import { useRoomStore } from "../../stores/useRoomStore";
+import { useNavigate, useParams } from "react-router-dom";
+import { ReviewDetailProps } from "../../types/components/review";
+import { deleteReview } from "../../api/review";
 
 const LikeSolidIcon = BiSolidLike as unknown as React.FC;
 const LikeIcon = BiLike as unknown as React.FC;
 
-interface Review {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  date: string;
-  likes: number;
-  imageUrl: string;
-  isLiked: boolean;
-}
-
-interface ReviewDetailProps {
-  review: Review;
-  onBack: () => void;
-  isRoom?: boolean;
-}
-
-const ReviewDetail = ({ review, onBack, isRoom }: ReviewDetailProps) => {
+const ReviewDetail = ({
+  review,
+  onBack,
+  isRoom,
+  onDelete,
+  onToggleLike,
+  likeLoadingId,
+}: ReviewDetailProps) => {
   const navigate = useNavigate();
-  const { currentRoomId } = useRoomStore();
+  const { roomId } = useParams();
 
   const parseContent = (content: string) => {
     const urlPattern =
@@ -48,12 +39,31 @@ const ReviewDetail = ({ review, onBack, isRoom }: ReviewDetailProps) => {
   };
 
   const handleEditClick = () => {
-    navigate(`/rooms/${currentRoomId}/review`, {
+    navigate(`/rooms/${roomId}/review`, {
       state: {
+        id: review.id,
+        starbucksId: review.starbucksId,
         title: review.title,
         content: review.content,
+        visitedAt: review.visitedAt,
+        isEdit: true,
       },
     });
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      await deleteReview(review.id);
+
+      alert("리뷰가 삭제되었습니다.");
+      if (onDelete) {
+        onDelete(review.id);
+      } else {
+        onBack();
+      }
+    } catch (error) {
+      alert("리뷰 삭제에 실패했습니다.");
+    }
   };
 
   return (
@@ -63,24 +73,29 @@ const ReviewDetail = ({ review, onBack, isRoom }: ReviewDetailProps) => {
         {isRoom && (
           <ButtonContainer>
             <EditButton onClick={handleEditClick}>수정</EditButton>
-            <DeleteButton onClick={() => console.log("삭제 버튼 클릭")}>
-              삭제
-            </DeleteButton>
+            <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
           </ButtonContainer>
         )}
       </ActionButtons>
 
       <ReviewDetailWrapper>
-        <ReviewHeader></ReviewHeader>
         <ReviewDetailContent>
           <ReviewDetailTitle>{review.title}</ReviewDetailTitle>
-          <ReviewInfo>
-            작성자: {review.author} <br />
-            {review.date}
-          </ReviewInfo>
-          <ReviewLike>
-            {review.isLiked ? <LikeSolidIcon /> : <LikeIcon />}
-            {review.likes}
+          <ReviewInfo>작성자: {review.author}</ReviewInfo>
+          <ReviewLike
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!likeLoadingId || likeLoadingId !== review.id) {
+                onToggleLike && onToggleLike(review.id, review.isLike);
+              }
+            }}
+            style={{
+              opacity: likeLoadingId === review.id ? 0.5 : 1,
+              pointerEvents: likeLoadingId === review.id ? "none" : "auto",
+            }}
+          >
+            {review.isLike ? <LikeSolidIcon /> : <LikeIcon />}
+            {review.likeCount}
           </ReviewLike>
           <ReviewDetailText>{parseContent(review.content)}</ReviewDetailText>
         </ReviewDetailContent>
@@ -135,20 +150,6 @@ const ReviewDetailText = styled.p`
 
 const ReviewDetailImage = styled.img`
   border-radius: 6px;
-`;
-
-const ReviewHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-  color: #555;
-
-  @media (max-width: 768px) {
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-  }
 `;
 
 const ReviewInfo = styled.div`

@@ -2,31 +2,10 @@ import styled from "styled-components";
 import RoomCard from "./RoomCard";
 import AddRoomCard from "./AddRoomCard";
 import { useNavigate } from "react-router-dom";
-import { useRoomStore } from "../../../stores/useRoomStore";
-
-interface Room {
-  id: number;
-  title: string;
-  members: {
-    id: number;
-    name: string;
-    profileImage: string;
-  }[];
-  visitsCount: number;
-  isPublic: boolean;
-}
-
-interface RoomGridProps {
-  currentPage: number;
-  rooms: Room[];
-}
+import { RoomGridProps } from "../../../types/components/room";
 
 const RoomGrid = ({ currentPage, rooms }: RoomGridProps) => {
   const navigate = useNavigate();
-  const setCurrentRoomId = useRoomStore((state) => state.setCurrentRoomId);
-  const setCurrentRoomTitle = useRoomStore(
-    (state) => state.setCurrentRoomTitle
-  );
 
   const handleAddRoom = () => {
     navigate("/rooms/create");
@@ -40,12 +19,10 @@ const RoomGrid = ({ currentPage, rooms }: RoomGridProps) => {
         {rooms.map((room) => (
           <RoomCard
             key={room.id}
-            title={room.title}
-            members={room.members}
-            visitsCount={room.visitsCount}
+            roomName={room.name}
+            visitedStarbucksCount={room.visitedStarbucksCount}
+            memberCount={room.memberCount}
             onClick={() => {
-              setCurrentRoomId(room.id);
-              setCurrentRoomTitle(room.title);
               navigate(`/rooms/${room.id}`);
             }}
           />

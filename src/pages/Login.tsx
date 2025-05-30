@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import SocialLoginButton from "../components/sidebar/SocialLoginButton";
+import SocialLoginButton from "../components/SocialLoginButton";
 import { ReactComponent as MapLineSVG } from "../assets/icons/map-line.svg";
 import { ReactComponent as Logo } from "../assets/icons/logo.svg";
 import { ReactComponent as KakaoSVG } from "../assets/icons/kakao.svg";
@@ -13,14 +13,14 @@ const Login = () => {
       <Content>
         <StyledLogo />
         <SocialLoginButton
-          socialType="kakao"
+          provider="kakao"
           iconSrc={<KakaoSVG />}
           backgroundColor="#FEE500"
           border="#FEE500"
           text="카카오 로그인"
         />
         <SocialLoginButton
-          socialType="google"
+          provider="google"
           iconSrc={<GoogleSVG />}
           backgroundColor="#FFFFFF"
           border="#E0E0E0"

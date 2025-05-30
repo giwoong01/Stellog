@@ -1,18 +1,9 @@
 import styled from "styled-components";
-
-interface MemberInfoProps {
-  isLoggedIn: boolean;
-  userInfo: {
-    name: string;
-    imageUrl: string;
-  } | null;
-  onLogin: () => void;
-  onLogout: () => void;
-}
+import { MemberInfoProps } from "../types/components/member";
 
 const MemberInfo = ({
   isLoggedIn,
-  userInfo,
+  memberInfo,
   onLogin,
   onLogout,
 }: MemberInfoProps) => {
@@ -20,8 +11,12 @@ const MemberInfo = ({
     <Container>
       {isLoggedIn ? (
         <>
-          <MemberImg src={userInfo?.imageUrl}></MemberImg>
-          <MemberName>{userInfo?.name}님</MemberName>
+          {memberInfo && (
+            <>
+              <MemberImg src={memberInfo.profileImgUrl} alt={memberInfo.name} />
+              <MemberName>{memberInfo.name}님</MemberName>
+            </>
+          )}
           <Button onClick={onLogout}>로그아웃</Button>
         </>
       ) : (
@@ -65,7 +60,7 @@ const Button = styled.button`
   color: white;
   border: none;
   border-radius: 4px;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   cursor: pointer;
 
   &:hover {

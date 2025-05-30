@@ -1,18 +1,13 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as EditIconSVG } from "../../../assets/icons/edit.svg";
-import { useRoomStore } from "../../../stores/useRoomStore";
+import { RoomTitleProps } from "../../../types/components/room";
 
-export interface RoomTitleProps {
-  title: string;
-}
-
-const RoomTitle = ({ title }: RoomTitleProps) => {
+const RoomTitle = ({ roomId, title }: RoomTitleProps) => {
   const navigate = useNavigate();
-  const currentRoomId = useRoomStore((state) => state.currentRoomId);
 
   const handleEditClick = () => {
-    navigate(`/rooms/${currentRoomId}/edit`);
+    navigate(`/rooms/${roomId}/edit`);
   };
 
   return (

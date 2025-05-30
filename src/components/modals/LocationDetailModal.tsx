@@ -1,37 +1,95 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import reviews from "../../data/review.json";
 import ReviewList from "../review/ReviewList";
 import ReviewDetail from "../review/ReviewDetail";
-
-interface Review {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  date: string;
-  likes: number;
-  imageUrl: string;
-  isLiked: boolean;
-}
-
-interface LocationDetailModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  location: {
-    name: string;
-    address: string;
-  } | null;
-  isRoom?: boolean;
-}
+import {
+  getRoomStarbucksReviews,
+  getStarbucksReviews,
+  likeReview,
+  unlikeReview,
+} from "../../api/review";
+import { Review } from "../../types/components/review";
+import { LocationDetailModalProps } from "../../types/components/modals";
 
 const LocationDetailModal = ({
   isOpen,
   onClose,
   location,
   isRoom,
+  roomId,
 }: LocationDetailModalProps) => {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [likeLoadingId, setLikeLoadingId] = useState<number | null>(null);
+
+  const handleToggleLike = async (reviewId: number, isLike: boolean) => {
+    if (likeLoadingId === reviewId) return;
+    setLikeLoadingId(reviewId);
+    try {
+      if (isLike) {
+        await unlikeReview(reviewId);
+      } else {
+        await likeReview(reviewId);
+      }
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId
+            ? {
+                ...r,
+                isLike: !r.isLike,
+                likeCount: r.isLike ? r.likeCount - 1 : r.likeCount + 1,
+              }
+            : r
+        )
+      );
+      setSelectedReview((prev) =>
+        prev && prev.id === reviewId
+          ? {
+              ...prev,
+              isLike: !prev.isLike,
+              likeCount: prev.isLike ? prev.likeCount - 1 : prev.likeCount + 1,
+            }
+          : prev
+      );
+    } catch (e) {
+      alert("좋아요 처리에 실패했습니다.");
+    } finally {
+      setLikeLoadingId(null);
+    }
+  };
+
+  const handleDeleteReview = (reviewId: number) => {
+    setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+    setSelectedReview(null);
+  };
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      if (location?.id) {
+        setIsLoading(true);
+        try {
+          let response;
+
+          if (isRoom && roomId) {
+            response = await getRoomStarbucksReviews(roomId, location.id);
+          } else {
+            response = await getStarbucksReviews(location.id);
+          }
+
+          setReviews(response);
+        } catch (error) {
+          console.error("리뷰를 불러오는데 실패했습니다:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    if (isOpen && location?.id) {
+      loadReviews();
+    }
+  }, [isOpen, location?.id, isRoom, roomId]);
 
   const handleClose = () => {
     setSelectedReview(null);
@@ -50,12 +108,19 @@ const LocationDetailModal = ({
             review={selectedReview}
             onBack={() => setSelectedReview(null)}
             isRoom={isRoom}
+            onDelete={handleDeleteReview}
+            onToggleLike={handleToggleLike}
+            likeLoadingId={likeLoadingId}
           />
         ) : (
           <ReviewList
             reviews={reviews}
             onSelectReview={setSelectedReview}
             isRoom={isRoom}
+            isLoading={isLoading}
+            locationId={location.id}
+            onToggleLike={handleToggleLike}
+            likeLoadingId={likeLoadingId}
           />
         )}
       </ModalBox>

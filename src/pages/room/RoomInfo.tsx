@@ -5,70 +5,47 @@ import RoomVisitStatus from "../../components/room/info/RoomVisitStatus";
 import RoomVisitList from "../../components/room/info/RoomVisitList";
 import { useRoomStore } from "../../stores/useRoomStore";
 import BadgeGrid from "../../components/BadgeGrid";
-
-const dummyRoom = {
-  name: "1인 제주도 스타벅스 방문",
-  user: [
-    { name: "최기웅1", isOwner: true },
-    { name: "최기웅2", isOwner: false },
-    { name: "최기웅3", isOwner: false },
-    { name: "최기웅4", isOwner: false },
-    { name: "최기웅5", isOwner: false },
-    { name: "최기웅6", isOwner: false },
-    { name: "최기웅7", isOwner: false },
-    { name: "최기웅8", isOwner: false },
-    { name: "최기웅9", isOwner: false },
-    { name: "최기웅10", isOwner: false },
-    { name: "최기웅11", isOwner: false },
-    { name: "최기웅12", isOwner: false },
-    { name: "최기웅13", isOwner: false },
-    { name: "최기웅14", isOwner: false },
-    { name: "최기웅15", isOwner: false },
-    { name: "최기웅16", isOwner: false },
-  ],
-  badges: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-  visitCount: 10,
-  totalCount: 33,
-  visits: [
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-    { memo: "아 여기 맛있더라", date: "2025.3.24", store: "제주성산DT점" },
-  ],
-};
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const RoomInfo = () => {
-  const { currentRoomTitle } = useRoomStore();
+  const { roomId } = useParams();
+  const { room, setRoom } = useRoomStore();
+  const { memberInfo, fetchMemberInfo } = useAuthStore();
+
+  useEffect(() => {
+    fetchMemberInfo();
+    if (roomId) {
+      setRoom(Number(roomId));
+    }
+  }, []);
 
   return (
     <Wrapper>
-      <RoomTitle title={currentRoomTitle || ""} />
+      <RoomTitle roomId={room?.id || 0} title={room?.name || ""} />
 
       <MainGrid>
         <SectionLabel>사용자</SectionLabel>
         <SectionLabel>배지</SectionLabel>
         <LeftSection>
-          {dummyRoom.user.map((user) => (
-            <RoomUserInfo key={user.name} user={user} isOwner={user.isOwner} />
+          {room?.roomMembers.map((member) => (
+            <RoomUserInfo
+              key={member.id}
+              user={member}
+              isOwner={member.id === memberInfo?.id}
+            />
           ))}
         </LeftSection>
         <RightSection>
-          <BadgeGrid badges={dummyRoom.badges} />
+          <BadgeGrid badges={room?.badges || []} />
           <StatusCard>
-            <RoomVisitStatus
-              visitCount={dummyRoom.visitCount}
-              totalCount={dummyRoom.totalCount}
-            />
+            <RoomVisitStatus visitCount={room?.visitedStarbucksCount || 0} />
           </StatusCard>
         </RightSection>
       </MainGrid>
 
-      <RoomVisitList visits={dummyRoom.visits} />
+      <RoomVisitList visits={room?.reviews || []} />
     </Wrapper>
   );
 };
@@ -104,6 +81,7 @@ const LeftSection = styled.div`
   border-top: 0.3px solid #036635;
   border-bottom: 1.5px solid #036635;
   padding: 0.7rem 0;
+  margin-top: 1rem;
   overflow-y: auto;
 `;
 

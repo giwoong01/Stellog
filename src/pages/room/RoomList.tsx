@@ -1,18 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import SearchBar from "../../components/SearchBar";
 import RoomGrid from "../../components/room/list/RoomGrid";
 import Pagination from "../../components/Pagination";
 import { useRoomStore } from "../../stores/useRoomStore";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const RoomList = () => {
-  const { rooms } = useRoomStore();
+  const { rooms, setRooms, isLoading } = useRoomStore();
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setRooms();
+  }, []);
 
   const roomsPerPage = currentPage === 1 ? 5 : 6;
   const totalPages = Math.ceil((rooms.length - 5) / 6) + 1;
   const startIndex = currentPage === 1 ? 0 : 5 + (currentPage - 2) * 6;
   const currentRooms = rooms.slice(startIndex, startIndex + roomsPerPage);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <PageWrapper>

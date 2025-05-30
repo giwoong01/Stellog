@@ -26,6 +26,7 @@ import MyPage from "./pages/mypage/MyPage";
 import MyPageCalendar from "./pages/mypage/MyPageCalendar";
 import MyPageReview from "./pages/mypage/MyPageReview";
 import MemberPage from "./pages/mypage/MemberPage";
+import OAuthCallback from "./pages/OauthCallback";
 
 const DefaultLayout = () => {
   return (
@@ -42,6 +43,10 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/oauth2/callback/:provider"
+            element={<OAuthCallback />}
+          />
 
           <Route element={<DefaultLayout />}>
             <Route path="/" element={<Main />} />

@@ -1,18 +1,10 @@
 import styled from "styled-components";
 import { ReactComponent as CoffeeIconSVG } from "../../../assets/icons/coffee.svg";
 
-const RoomVisitStatus = ({
-  visitCount,
-  totalCount,
-}: {
-  visitCount: number;
-  totalCount: number;
-}) => (
+const RoomVisitStatus = ({ visitCount }: { visitCount: number }) => (
   <StatusWrapper>
     <StyledCoffeeIcon />
-    <StatusText>
-      {visitCount} / {totalCount}
-    </StatusText>
+    <StatusText>{visitCount} / 33</StatusText>
   </StatusWrapper>
 );
 

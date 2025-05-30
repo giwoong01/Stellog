@@ -1,42 +1,67 @@
 import { create } from "zustand";
-
-interface Room {
-  id: number;
-  title: string;
-  members: {
-    id: number;
-    name: string;
-    profileImage: string;
-  }[];
-  visitsCount: number;
-  isPublic: boolean;
-}
+import {
+  Room,
+  RoomCreateRequest,
+  Rooms,
+  RoomUpdateRequest,
+} from "../types/api/room";
+import {
+  createRoom,
+  getRooms,
+  getRoom,
+  updateRoom,
+  deleteRoom,
+} from "../api/room";
 
 interface RoomStore {
-  rooms: Room[];
+  rooms: Rooms[];
+  room: Room | null;
   currentRoomId: number | null;
   currentRoomTitle: string | null;
-  setRooms: (rooms: Room[]) => void;
-  addRoom: (room: Room) => void;
-  updateRoom: (updatedRoom: Partial<Room> & { id: number }) => void;
-  setCurrentRoomId: (roomId: number | null) => void;
-  setCurrentRoomTitle: (roomTitle: string | null) => void;
+  isLoading: boolean;
+
+  setRooms: () => Promise<void>;
+  setRoom: (roomId: number) => Promise<void>;
+  createRoom: (room: RoomCreateRequest) => Promise<void>;
+  updateRoom: (roomId: number, updatedRoom: RoomUpdateRequest) => Promise<void>;
+  deleteRoom: (roomId: number) => Promise<void>;
 }
 
-export const useRoomStore = create<RoomStore>((set) => ({
+export const useRoomStore = create<RoomStore>((set, get) => ({
   rooms: [],
+  room: null,
   currentRoomId: null,
   currentRoomTitle: null,
-  setRooms: (rooms) => set({ rooms }),
-  addRoom: (room) => set((state) => ({ rooms: [...state.rooms, room] })),
-  updateRoom: (updatedRoom) =>
+  isLoading: false,
+
+  setRooms: async () => {
+    set({ isLoading: true });
+    const response = await getRooms();
+    set({ rooms: response, isLoading: false });
+  },
+
+  setRoom: async (roomId: number) => {
+    const response = await getRoom(roomId);
+    set({ room: response });
+  },
+
+  createRoom: async (room) => {
+    const newRoom = await createRoom(room);
+    set((state) => ({ rooms: [...state.rooms, newRoom] }));
+  },
+
+  updateRoom: async (roomId, updatedRoom) => {
+    const latest = await updateRoom(roomId, updatedRoom);
     set((state) => ({
-      rooms: state.rooms.map((room) =>
-        room.id === updatedRoom.id
-          ? { ...room, ...updatedRoom, visitsCount: room.visitsCount }
-          : room
-      ),
-    })),
-  setCurrentRoomId: (roomId) => set({ currentRoomId: roomId }),
-  setCurrentRoomTitle: (roomTitle) => set({ currentRoomTitle: roomTitle }),
+      rooms: state.rooms.map((room) => (room.id === roomId ? latest : room)),
+      room: state.room && state.room.id === roomId ? latest : state.room,
+    }));
+  },
+
+  deleteRoom: async (roomId) => {
+    await deleteRoom(roomId);
+    set((state) => ({
+      rooms: state.rooms.filter((room) => room.id !== roomId),
+    }));
+  },
 }));

@@ -1,27 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import googleIcon from "../../assets/icons/google.svg";
 import kakaoIcon from "../../assets/icons/kakao.svg";
-
-export interface MemberInfoProps {
-  nickname: string;
-  provider: string;
-  email: string;
-  userId: string;
-  roomCount: number;
-  reviewCount: number;
-  isOwnProfile?: boolean;
-}
+import { MemberInfoState } from "../../types/components/member";
 
 export const MemberInfo = ({
   nickname,
   provider,
   email,
-  userId,
   roomCount,
   reviewCount,
   isOwnProfile = true,
-}: MemberInfoProps) => {
+  onNicknameChange,
+  isLoading = false,
+}: MemberInfoState) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedNickname, setEditedNickname] = useState(nickname);
+
+  const handleEdit = () => {
+    setEditedNickname(nickname);
+    setIsEditing(true);
+  };
+
+  const handleSave = async () => {
+    if (onNicknameChange) {
+      await onNicknameChange(editedNickname);
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedNickname(nickname);
+    setIsEditing(false);
+  };
+
   const getProviderIcon = (provider: string) => {
     switch (provider) {
       case "google":
@@ -39,7 +51,32 @@ export const MemberInfo = ({
       <InfoGrid>
         <InfoItem>
           <InfoLabel>닉네임</InfoLabel>
-          <InfoValue>{nickname}</InfoValue>
+          <InfoValue>
+            {isEditing ? (
+              <NicknameEditContainer>
+                <NicknameInput
+                  value={editedNickname}
+                  onChange={(e) => setEditedNickname(e.target.value)}
+                  disabled={isLoading}
+                />
+                <EditButton onClick={handleSave} disabled={isLoading}>
+                  {isLoading ? "저장 중..." : "저장"}
+                </EditButton>
+                <EditButton onClick={handleCancel} disabled={isLoading}>
+                  취소
+                </EditButton>
+              </NicknameEditContainer>
+            ) : (
+              <NicknameContainer>
+                {nickname}
+                {isOwnProfile && (
+                  <EditButton onClick={handleEdit} disabled={isLoading}>
+                    수정
+                  </EditButton>
+                )}
+              </NicknameContainer>
+            )}
+          </InfoValue>
         </InfoItem>
         <InfoItem>
           <InfoLabel>이메일</InfoLabel>
@@ -48,11 +85,6 @@ export const MemberInfo = ({
             {email}
           </InfoValue>
         </InfoItem>
-        <InfoItem>
-          <InfoLabel>아이디</InfoLabel>
-          <InfoValue>{userId}</InfoValue>
-        </InfoItem>
-
         <InfoItem>
           <InfoLabel>방 개수</InfoLabel>
           <InfoValue>{roomCount}개</InfoValue>
@@ -115,4 +147,47 @@ const InfoValue = styled.div`
 const ProviderIcon = styled.img`
   width: 1.25rem;
   height: 1.25rem;
+`;
+
+const NicknameContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const NicknameEditContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const NicknameInput = styled.input`
+  padding: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+`;
+
+const EditButton = styled.button`
+  padding: 0.25rem 0.5rem;
+  background-color: #036635;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+
+  &:hover {
+    background-color: #024d28;
+  }
+
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
 `;

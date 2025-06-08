@@ -1,94 +1,106 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { MemberProfile } from "../../components/mypage/MemberProfile";
 import { MemberInfo } from "../../components/mypage/MemberInfo";
-import BadgeGrid from "../../components/BadgeGrid";
 import FollowModal from "../../components/modals/FollowModal";
-
-const dummyData = {
-  profile: {
-    name: "최기웅",
-    age: 23,
-    profileImage:
-      "https://storage.googleapis.com/image-gcs/project/3/33190dd8-ad66-4186-ba4e-e2763f371b5b",
-    followers: 2000,
-    following: 1,
-  },
-  userInfo: {
-    nickname: "웅이",
-    provider: "google",
-    email: "a123@gmail.com",
-    userId: "qwer1234",
-    roomCount: 3,
-    reviewCount: 21,
-  },
-  badges: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-  followers: [
-    {
-      id: 1,
-      name: "김철수",
-      nickname: "철수123",
-      profileImage:
-        "https://storage.googleapis.com/image-gcs/project/3/33190dd8-ad66-4186-ba4e-e2763f371b5b",
-    },
-    {
-      id: 2,
-      name: "이영희",
-      nickname: "영희456",
-      profileImage:
-        "https://storage.googleapis.com/image-gcs/project/3/33190dd8-ad66-4186-ba4e-e2763f371b5b",
-    },
-  ],
-  following: [
-    {
-      id: 3,
-      name: "박지민",
-      nickname: "지민789",
-      profileImage:
-        "https://storage.googleapis.com/image-gcs/project/3/33190dd8-ad66-4186-ba4e-e2763f371b5b",
-    },
-  ],
-};
+import { useAuthStore } from "../../stores/useAuthStore";
+import {
+  updateMemberNickname,
+  getFollowers,
+  getFollowing,
+  updateProfileImage,
+} from "../../api/member";
+import { FollowMember } from "../../types/components/member";
 
 const MyPage = () => {
+  const { memberInfo, fetchMemberInfo } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
   const [isFollowModalOpen, setIsFollowModalOpen] = useState(false);
   const [followModalTab, setFollowModalTab] = useState<
     "followers" | "following"
   >("followers");
+  const [followers, setFollowers] = useState<FollowMember[]>([]);
+  const [following, setFollowing] = useState<FollowMember[]>([]);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
 
-  const handleFollowClick = (tab: "followers" | "following") => {
+  const handleFollowClick = async (tab: "followers" | "following") => {
     setFollowModalTab(tab);
     setIsFollowModalOpen(true);
+    setIsFollowLoading(true);
+
+    try {
+      if (tab === "followers") {
+        const data = await getFollowers();
+        setFollowers(data);
+      } else {
+        const data = await getFollowing();
+        setFollowing(data);
+      }
+    } catch (error) {
+      console.error("팔로우/팔로잉 목록 조회 실패:", error);
+    } finally {
+      setIsFollowLoading(false);
+    }
   };
+
+  const handleNicknameChange = async (newNickname: string) => {
+    try {
+      setIsLoading(true);
+      await updateMemberNickname(newNickname);
+      await fetchMemberInfo();
+    } catch (error) {
+      console.error("닉네임 변경 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleProfileImageChange = async (file: File) => {
+    try {
+      setIsLoading(true);
+      await updateProfileImage(file);
+      await fetchMemberInfo();
+      alert("프로필 이미지가 변경되었습니다.");
+    } catch {
+      alert("이미지 변경 실패");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMemberInfo();
+  }, []);
 
   return (
     <MyPageContainer>
       <MainContent>
         <MemberProfile
-          profileImage={dummyData.profile.profileImage}
-          name={dummyData.profile.name}
-          age={dummyData.profile.age}
-          followers={dummyData.profile.followers}
-          following={dummyData.profile.following}
+          profileImage={memberInfo?.profileImgUrl || ""}
+          name={memberInfo?.name || ""}
+          followers={memberInfo?.followerCount || 0}
+          following={memberInfo?.followingCount || 0}
           onFollowersClick={() => handleFollowClick("followers")}
           onFollowingClick={() => handleFollowClick("following")}
+          onProfileImageChange={handleProfileImageChange}
         />
-        <BadgeGrid badges={dummyData.badges} />
         <MemberInfo
-          nickname={dummyData.userInfo.nickname}
-          provider={dummyData.userInfo.provider}
-          email={dummyData.userInfo.email}
-          userId={dummyData.userInfo.userId}
-          roomCount={dummyData.userInfo.roomCount}
-          reviewCount={dummyData.userInfo.reviewCount}
+          nickname={memberInfo?.nickName || ""}
+          provider={memberInfo?.provider || ""}
+          email={memberInfo?.email || ""}
+          roomCount={memberInfo?.roomCount || 0}
+          reviewCount={memberInfo?.reviewCount || 0}
+          onNicknameChange={handleNicknameChange}
+          isLoading={isLoading}
         />
       </MainContent>
       <FollowModal
         isOpen={isFollowModalOpen}
         onClose={() => setIsFollowModalOpen(false)}
         initialTab={followModalTab}
-        followers={dummyData.followers}
-        following={dummyData.following}
+        followers={followers}
+        following={following}
+        isLoading={isFollowLoading}
       />
     </MyPageContainer>
   );

@@ -1,9 +1,5 @@
 import styled from "styled-components";
-
-interface VisibilitySelectorProps {
-  visibility: "public" | "private";
-  onChange: (value: "public" | "private") => void;
-}
+import { VisibilitySelectorProps } from "../../../types/components/member";
 
 const VisibilitySelector = ({
   visibility,

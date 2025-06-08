@@ -38,7 +38,7 @@ const RoomInfo = () => {
           ))}
         </LeftSection>
         <RightSection>
-          <BadgeGrid badges={room?.badges || []} />
+          <BadgeGrid badges={room?.roomBadgeDtos || []} />
           <StatusCard>
             <RoomVisitStatus visitCount={room?.visitedStarbucksCount || 0} />
           </StatusCard>

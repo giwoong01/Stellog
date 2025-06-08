@@ -1,38 +1,51 @@
 import React from "react";
 import styled from "styled-components";
-
-export interface MemberProfileProps {
-  profileImage: string;
-  name: string;
-  age: number;
-  followers: number;
-  following: number;
-  onFollowersClick?: () => void;
-  onFollowingClick?: () => void;
-  isOwnProfile?: boolean;
-}
+import { MemberProfileProps } from "../../types/components/member";
+import EditIcon from "../../assets/icons/image-edit.svg";
 
 export const MemberProfile = ({
   profileImage,
   name,
-  age,
   followers,
   following,
   onFollowersClick,
   onFollowingClick,
   isOwnProfile = true,
-}: MemberProfileProps) => {
+  onProfileImageChange,
+}: MemberProfileProps & { onProfileImageChange?: (file: File) => void }) => {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleEditClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    onProfileImageChange?.(file);
+  };
+
   return (
     <ProfileContainer>
       <ProfileContent>
         <ProfileImageWrapper>
           <ProfileImage src={profileImage} alt="프로필 이미지" />
+          {isOwnProfile && (
+            <EditOverlay onClick={handleEditClick}>
+              <EditImg src={EditIcon} alt="이미지 변경" />
+              <HiddenInput
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+              />
+            </EditOverlay>
+          )}
         </ProfileImageWrapper>
 
         <ProfileInfo>
-          <UserName>
-            {name} {age}세 (만)
-          </UserName>
+          <UserName>{name}</UserName>
           <FollowInfo>
             <FollowText onClick={onFollowersClick}>
               팔로워 {followers}
@@ -61,6 +74,7 @@ const ProfileContent = styled.div`
 const ProfileImageWrapper = styled.div`
   width: 10rem;
   height: 10rem;
+  position: relative;
 `;
 
 const ProfileImage = styled.img`
@@ -104,4 +118,27 @@ const FollowText = styled.span`
 
 const Dot = styled.span`
   color: #666666;
+`;
+
+const EditOverlay = styled.div`
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+`;
+
+const EditImg = styled.img`
+  width: 2rem;
+  height: 2rem;
+`;
+
+const HiddenInput = styled.input`
+  display: none;
 `;

@@ -1,14 +1,5 @@
 import styled from "styled-components";
-import { MemberInfo } from "../../../types/api/member";
-
-interface MemberSelectorProps {
-  search: string;
-  onSearchChange: (value: string) => void;
-  filteredMembers: MemberInfo[];
-  selectedMembers: MemberInfo[];
-  toggleMember: (member: MemberInfo) => void;
-  currentMemberId: number;
-}
+import { MemberSelectorProps } from "../../../types/components/member";
 
 const MemberSelector = ({
   search,

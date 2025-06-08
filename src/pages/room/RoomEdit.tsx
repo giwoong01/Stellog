@@ -11,7 +11,7 @@ import CancelButton from "../../components/CancelButton";
 import { useAuthStore } from "../../stores/useAuthStore";
 import DeleteButton from "../../components/DeleteButton";
 import { getMembers } from "../../api/member";
-import { MemberInfo } from "../../types/api/member";
+import { MemberInfo } from "../../types/components/member";
 
 const RoomEdit = () => {
   const { roomId } = useParams();
@@ -76,8 +76,13 @@ const RoomEdit = () => {
         id: member.id,
         name: member.name,
         email: "",
-        nickname: member.name,
+        nickName: member.name,
         profileImgUrl: "",
+        roomCount: 0,
+        reviewCount: 0,
+        followingCount: 0,
+        followerCount: 0,
+        provider: "",
       }));
       setMembers(initialMembers);
       setOtherMemberIds(room.roomMembers.map((member) => member.id));

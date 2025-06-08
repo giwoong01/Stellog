@@ -1,48 +1,40 @@
 import styled from "styled-components";
 import { MemberProfile } from "../../components/mypage/MemberProfile";
 import { MemberInfo } from "../../components/mypage/MemberInfo";
-import BadgeGrid from "../../components/BadgeGrid";
-
-const dummyData = {
-  profile: {
-    name: "방문한 친구",
-    age: 25,
-    profileImage:
-      "https://storage.googleapis.com/image-gcs/project/3/33190dd8-ad66-4186-ba4e-e2763f371b5b",
-    followers: 150,
-    following: 120,
-  },
-  memberInfo: {
-    nickname: "친구닉네임",
-    provider: "google",
-    email: "friend@gmail.com",
-    userId: "friend1234",
-    roomCount: 5,
-    reviewCount: 30,
-  },
-  badges: [1, 2, 3, 4, 5],
-};
+import { useEffect, useState } from "react";
+import { getMemberInfoById } from "../../api/member";
+import { MemberInfo as MemberInfoType } from "../../types/components/member";
+import { useParams } from "react-router-dom";
 
 const MemberPage = () => {
+  const { memberId } = useParams();
+  const [memberInfo, setMemberInfo] = useState<MemberInfoType | null>(null);
+
+  useEffect(() => {
+    const fetchMemberInfo = async () => {
+      const response = await getMemberInfoById(Number(memberId));
+      setMemberInfo(response);
+    };
+
+    fetchMemberInfo();
+  }, []);
+
   return (
     <MemberPageContainer>
       <MainContent>
         <MemberProfile
-          profileImage={dummyData.profile.profileImage}
-          name={dummyData.profile.name}
-          age={dummyData.profile.age}
-          followers={dummyData.profile.followers}
-          following={dummyData.profile.following}
+          profileImage={memberInfo?.profileImgUrl || ""}
+          name={memberInfo?.name || ""}
+          followers={memberInfo?.followerCount || 0}
+          following={memberInfo?.followingCount || 0}
           isOwnProfile={false}
         />
-        <BadgeGrid badges={dummyData.badges} />
         <MemberInfo
-          nickname={dummyData.memberInfo.nickname}
-          provider={dummyData.memberInfo.provider}
-          email={dummyData.memberInfo.email}
-          userId={dummyData.memberInfo.userId}
-          roomCount={dummyData.memberInfo.roomCount}
-          reviewCount={dummyData.memberInfo.reviewCount}
+          nickname={memberInfo?.nickName || ""}
+          provider={memberInfo?.provider || ""}
+          email={memberInfo?.email || ""}
+          roomCount={memberInfo?.roomCount || 0}
+          reviewCount={memberInfo?.reviewCount || 0}
           isOwnProfile={false}
         />
       </MainContent>

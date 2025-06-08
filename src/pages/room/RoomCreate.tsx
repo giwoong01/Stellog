@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRoomStore } from "../../stores/useRoomStore";
 import { useNavigate } from "react-router-dom";
-
 import NameInput from "../../components/NameInput";
 import MemberSelector from "../../components/room/create/MemberSelector";
 import VisibilitySelector from "../../components/room/create/VisibilitySelector";
@@ -10,7 +9,7 @@ import CreateButton from "../../components/CreateButton";
 import CancelButton from "../../components/CancelButton";
 import { useAuthStore } from "../../stores/useAuthStore";
 import { getMembers } from "../../api/member";
-import { MemberInfo } from "../../types/api/member";
+import { MemberInfo } from "../../types/components/member";
 
 const RoomCreate = () => {
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ const RoomCreate = () => {
   const [members, setMembers] = useState<MemberInfo[]>([]);
   const [otherMemberIds, setOtherMemberIds] = useState<number[]>([]);
   const [visibility, setVisibility] = useState<"public" | "private">("public");
-
   const { createRoom } = useRoomStore();
   const { memberInfo, fetchMemberInfo } = useAuthStore();
 

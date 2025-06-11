@@ -1,45 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useKakaoMap from "../../hooks/useKakaoMap";
 import locations from "../../data/locations.json";
 import styled from "styled-components";
-
-interface SavedRoute {
-  id: number;
-  name: string;
-  locations: typeof locations;
-  color: string;
-}
-
-// 임시 더미 데이터
-const savedRoutes: SavedRoute[] = [
-  { id: 1, name: "동선 이름1", locations: locations, color: "#4ade80" },
-  { id: 2, name: "동선 이름2", locations: locations, color: "#f472b6" },
-  { id: 3, name: "동선 이름3", locations: locations, color: "#60a5fa" },
-  { id: 4, name: "동선 이름4", locations: locations, color: "#c084fc" },
-  { id: 5, name: "동선 이름5", locations: locations, color: "#fb923c" },
-  { id: 6, name: "동선 이름6", locations: locations, color: "#fbbf24" },
-  { id: 7, name: "동선 이름7", locations: locations, color: "#34d399" },
-  { id: 8, name: "동선 이름8", locations: locations, color: "#34d399" },
-  { id: 9, name: "동선 이름9", locations: locations, color: "#34d399" },
-  { id: 10, name: "동선 이름10", locations: locations, color: "#34d399" },
-  { id: 11, name: "동선 이름11", locations: locations, color: "#34d399" },
-  { id: 12, name: "동선 이름12", locations: locations, color: "#34d399" },
-  { id: 13, name: "동선 이름13", locations: locations, color: "#34d399" },
-  { id: 14, name: "동선 이름14", locations: locations, color: "#34d399" },
-  { id: 15, name: "동선 이름15", locations: locations, color: "#34d399" },
-  { id: 16, name: "동선 이름16", locations: locations, color: "#34d399" },
-  { id: 17, name: "동선 이름17", locations: locations, color: "#34d399" },
-];
+import { getBookmarkedRoutes } from "../../api/route";
+import { Route } from "../../types/components/route";
+import { getRandomColor } from "../../utils/colors";
 
 const RouteStarList = () => {
   const [selectedRoutes, setSelectedRoutes] = useState<number[]>([]);
   const [isOpen, setIsOpen] = useState(true);
+  const [savedRoutes, setSavedRoutes] = useState<Route[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [routeColors, setRouteColors] = useState<{ [key: number]: string }>({});
+
+  useEffect(() => {
+    const fetchBookmarkedRoutes = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getBookmarkedRoutes();
+        setSavedRoutes(response);
+
+        const colors: { [key: number]: string } = {};
+        response.forEach((route: Route) => {
+          if (!colors[route.id]) {
+            colors[route.id] = getRandomColor();
+          }
+        });
+        setRouteColors(colors);
+      } catch (error) {
+        console.error("북마크된 동선 목록을 불러오는데 실패했습니다:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBookmarkedRoutes();
+  }, []);
 
   const selectedRoutesData = selectedRoutes.map((id) => {
     const route = savedRoutes.find((r) => r.id === id);
     return {
-      locations: route?.locations || [],
-      color: route?.color || "#4ade80",
+      locations: (route?.starbucksList || []).map((starbucks) => ({
+        ...starbucks,
+        address: "",
+      })),
+      color: routeColors[id] || "#4ade80",
     };
   });
 
@@ -71,16 +76,22 @@ const RouteStarList = () => {
         <RouteListTitle>저장된 동선 목록</RouteListTitle>
 
         <RouteList>
-          {savedRoutes.map((route) => (
-            <RouteItem key={route.id}>
-              <Checkbox
-                checked={selectedRoutes.includes(route.id)}
-                onClick={() => handleRouteToggle(route.id)}
-                $color={route.color}
-              />
-              <RouteName>{route.name}</RouteName>
-            </RouteItem>
-          ))}
+          {isLoading ? (
+            <LoadingMessage>로딩 중...</LoadingMessage>
+          ) : savedRoutes.length === 0 ? (
+            <EmptyMessage>저장된 동선이 없습니다.</EmptyMessage>
+          ) : (
+            savedRoutes.map((route) => (
+              <RouteItem key={route.id}>
+                <Checkbox
+                  checked={selectedRoutes.includes(route.id)}
+                  onClick={() => handleRouteToggle(route.id)}
+                  $color={routeColors[route.id] || "#4ade80"}
+                />
+                <RouteName>{route.name}</RouteName>
+              </RouteItem>
+            ))
+          )}
         </RouteList>
       </RouteListContainer>
     </PageWrapper>
@@ -208,4 +219,16 @@ const Checkbox = styled.div<{ checked: boolean; $color: string }>`
 const RouteName = styled.span`
   font-size: 1.1rem;
   color: #0e0e0e;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+`;
+
+const EmptyMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 `;

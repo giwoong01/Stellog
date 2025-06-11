@@ -1,13 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "../../components/SearchBar";
 import RouteGrid from "../../components/route/list/RouteGrid";
 import styled from "styled-components";
 import Pagination from "../../components/Pagination";
-import routes from "../../data/routes.json";
 import { useNavigate } from "react-router-dom";
+import { Route } from "../../types/components/route";
+import { getPopularRoutes } from "../../api/route";
 
 const RouteList = () => {
   const navigate = useNavigate();
+
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    getPopularRoutes().then((response) => {
+      if (Array.isArray(response)) {
+        setRoutes(response);
+      } else if (response && Array.isArray(response.routes)) {
+        setRoutes(response.routes);
+      } else {
+        setRoutes([]);
+      }
+      setIsLoading(false);
+    });
+  }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
   const routesPerPage = 12;
@@ -39,13 +58,17 @@ const RouteList = () => {
       </PaginationWrapper>
 
       <GridWrapper>
-        <RouteGrid
-          currentPage={currentPage}
-          routes={currentRoutes}
-          onClick={(routeId) => {
-            navigate(`/routes/${routeId}`);
-          }}
-        />
+        {isLoading ? (
+          <LoadingMessage>로딩 중...</LoadingMessage>
+        ) : (
+          <RouteGrid
+            currentPage={currentPage}
+            routes={currentRoutes}
+            onClick={(routeId) => {
+              navigate(`/routes/${routeId}`);
+            }}
+          />
+        )}
       </GridWrapper>
     </PageWrapper>
   );
@@ -88,4 +111,10 @@ const GridWrapper = styled.div`
   align-items: flex-start;
   overflow-y: auto;
   margin-top: 1rem;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 `;

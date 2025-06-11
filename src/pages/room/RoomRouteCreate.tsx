@@ -1,20 +1,30 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import useKakaoMap from "../../hooks/useKakaoMap";
 import locations from "../../data/locations.json";
 import RouteNameModal from "../../components/modals/RouteNameModal";
-import { useRoomStore } from "../../stores/useRoomStore";
 import styled from "styled-components";
 import SelectedLocationList from "../../components/route/SelectedLocationList";
+import { postOptimizeRoute, putRoute } from "../../api/route";
 
 const RoomRouteCreate = () => {
   const navigate = useNavigate();
-  const [selectedLocations, setSelectedLocations] = useState<any[]>([]);
+  const { roomId } = useParams();
+  const location = useLocation();
+  const state = location.state as {
+    routeId?: number;
+    routeName?: string;
+    starbucksList?: any[];
+    isEdit?: boolean;
+  };
+
+  const [selectedLocations, setSelectedLocations] = useState<any[]>(
+    state?.starbucksList || []
+  );
   const [optimizedLocations, setOptimizedLocations] = useState<any[]>([]);
   const [isOptimized, setIsOptimized] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [routeName, setRouteName] = useState("");
-  const { currentRoomId } = useRoomStore();
+  const [routeName, setRouteName] = useState(state?.routeName || "");
 
   const handleMarkerClick = (location: any) => {
     if (isOptimized) return;
@@ -36,9 +46,36 @@ const RoomRouteCreate = () => {
   };
 
   const handleComplete = async () => {
-    // 최적화 API 호출 예정
-    setOptimizedLocations([...selectedLocations]);
-    setIsOptimized(true);
+    if (!roomId || selectedLocations.length === 0) return;
+
+    try {
+      const routeCreateRequest = {
+        name: routeName || "임시동선",
+        starbucksIds: selectedLocations.map((loc) => loc.id),
+      };
+
+      if (state?.isEdit && state?.routeId) {
+        await putRoute(state.routeId, routeCreateRequest);
+      } else {
+        const result = await postOptimizeRoute(
+          Number(roomId),
+          routeCreateRequest
+        );
+
+        const nextOptimized = Array.isArray(result.optimizedLocations)
+          ? result.optimizedLocations
+          : Array.isArray(result)
+          ? result
+          : [];
+        setOptimizedLocations(nextOptimized);
+        setIsOptimized(true);
+      }
+
+      setIsModalOpen(false);
+      navigate(`/rooms/${roomId}/routes`);
+    } catch (e) {
+      alert(state?.isEdit ? "수정 실패" : "최적화 실패");
+    }
   };
 
   const handleEditClick = () => {
@@ -50,12 +87,6 @@ const RoomRouteCreate = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveRoute = async () => {
-    setIsModalOpen(false);
-    // 동선 저장 API 호출 예정
-    navigate(`/rooms/${currentRoomId}/routes`);
-  };
-
   return (
     <RoomRouteDetailContainer>
       <MapContainer id="map" />
@@ -63,10 +94,11 @@ const RoomRouteCreate = () => {
       <SelectedLocationList
         locations={selectedLocations}
         isOptimized={isOptimized}
-        optimizedLocations={optimizedLocations}
+        optimizedLocations={
+          Array.isArray(optimizedLocations) ? optimizedLocations : []
+        }
         onRemove={handleRemove}
         showButtons={true}
-        onComplete={handleComplete}
         onSave={handleSaveClick}
         onEdit={handleEditClick}
       />
@@ -75,7 +107,7 @@ const RoomRouteCreate = () => {
         <RouteNameModal
           value={routeName}
           onChange={setRouteName}
-          onSave={handleSaveRoute}
+          onSave={handleComplete}
           onClose={() => setIsModalOpen(false)}
         />
       )}

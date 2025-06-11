@@ -3,47 +3,36 @@ import { ReactComponent as CoffeeIconSVG } from "../../../assets/icons/coffee.sv
 import { ReactComponent as TimeIconSVG } from "../../../assets/icons/time.svg";
 import { ReactComponent as DistanceIconSVG } from "../../../assets/icons/distance.svg";
 import { ReactComponent as StarIconSVG } from "../../../assets/icons/star.svg";
-
-export interface Route {
-  id: number;
-  title: string;
-  start: string;
-  end: string;
-  cafeCount: number;
-  time: string;
-  distance: string;
-  star: number;
-}
-
-export interface RouteCardProps {
-  route: Route;
-  onClick: () => void;
-}
+import { RouteCardProps } from "../../../types/components/route";
 
 const RouteCard = ({ route, onClick }: RouteCardProps) => {
   return (
     <Card onClick={onClick}>
-      <Title>{route.title}</Title>
+      <Title>{route.name}</Title>
       <RouteInfo>
         <RoutePlace>
-          {route.start} <Arrow>→</Arrow> {route.end}
+          {route.starbucksList.length >= 2
+            ? `${route.starbucksList[0].name} → ${
+                route.starbucksList[route.starbucksList.length - 1].name
+              }`
+            : route.starbucksList[0]?.name || ""}
         </RoutePlace>
         <RouteMeta>
           <MetaItem>
             <CoffeeIconSVG />
-            {route.cafeCount}
+            {route.starbucksList.length}
           </MetaItem>
-          <MetaItem>
+          {/* <MetaItem>
             <TimeIconSVG />
             {route.time}
-          </MetaItem>
-          <MetaItem>
+          </MetaItem> */}
+          {/* <MetaItem>
             <DistanceIconSVG />
             {route.distance}
-          </MetaItem>
+          </MetaItem> */}
           <MetaItem>
             <StarIconSVG />
-            {route.star}
+            {route.bookmarkCount}
           </MetaItem>
         </RouteMeta>
       </RouteInfo>

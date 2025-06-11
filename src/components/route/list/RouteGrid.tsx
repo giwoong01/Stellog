@@ -1,26 +1,8 @@
 import styled from "styled-components";
 import RouteCard from "./RouteCard";
 import AddRouteCard from "./AddRouteCard";
-import { useNavigate } from "react-router-dom";
-import { useRoomStore } from "../../../stores/useRoomStore";
-
-export interface Route {
-  id: number;
-  title: string;
-  start: string;
-  end: string;
-  cafeCount: number;
-  time: string;
-  distance: string;
-  star: number;
-}
-
-interface RouteGridProps {
-  currentPage: number;
-  routes: Route[];
-  onClick: (routeId: number) => void;
-  showAddButton?: boolean;
-}
+import { useNavigate, useParams } from "react-router-dom";
+import { RouteGridProps } from "../../../types/components/route";
 
 const RouteGrid = ({
   currentPage,
@@ -29,10 +11,10 @@ const RouteGrid = ({
   showAddButton = false,
 }: RouteGridProps) => {
   const navigate = useNavigate();
-  const { currentRoomId } = useRoomStore();
+  const { roomId } = useParams();
 
   const handleAddRoute = () => {
-    navigate(`/rooms/${currentRoomId}/routes/create`);
+    navigate(`/rooms/${roomId}/routes/create`);
   };
 
   return (

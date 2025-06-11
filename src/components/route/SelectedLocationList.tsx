@@ -1,31 +1,5 @@
 import styled from "styled-components";
-
-interface Location {
-  name: string;
-  latitude: number;
-  longitude: number;
-}
-
-interface BaseProps {
-  locations: Location[];
-  onRemove?: (name: string) => void;
-  showButtons?: boolean;
-  onComplete?: () => void;
-  onSave?: () => void;
-  onEdit?: () => void;
-}
-
-interface OptimizedProps extends BaseProps {
-  isOptimized: true;
-  optimizedLocations: Location[];
-}
-
-interface NotOptimizedProps extends BaseProps {
-  isOptimized: false;
-  optimizedLocations?: Location[];
-}
-
-type Props = OptimizedProps | NotOptimizedProps;
+import { Location, Props } from "../../types/components/route";
 
 const SelectedLocationList = ({
   locations,
@@ -33,7 +7,6 @@ const SelectedLocationList = ({
   optimizedLocations,
   onRemove,
   showButtons,
-  onComplete,
   onSave,
   onEdit,
 }: Props) => {
@@ -69,7 +42,7 @@ const SelectedLocationList = ({
       {showButtons && (
         <>
           {locations.length > 0 && !isOptimized && (
-            <CompleteBtn onClick={onComplete}>선택 완료</CompleteBtn>
+            <CompleteBtn onClick={onSave}>선택 완료</CompleteBtn>
           )}
           {isOptimized && (
             <BtnRow>

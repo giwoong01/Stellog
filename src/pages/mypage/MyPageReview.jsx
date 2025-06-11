@@ -13,6 +13,7 @@ const MyPageReview = () => {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [likeLoadingId, setLikeLoadingId] = useState(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const dropdownOptions = rooms.map((room) => ({
     id: room.id,
@@ -21,8 +22,10 @@ const MyPageReview = () => {
         ? `${room.name} (${reviews.length})`
         : room.name,
   }));
+
   useEffect(() => {
     const fetchRooms = async () => {
+      setIsInitialLoading(true);
       await setRooms();
     };
 
@@ -42,6 +45,8 @@ const MyPageReview = () => {
       .then((data) => setReviews(data))
       .catch(() => setReviews([]))
       .finally(() => setIsLoading(false));
+
+    setIsInitialLoading(false);
   }, [currentRoomId]);
 
   const handleToggleLike = async (reviewId, isLike) => {
@@ -80,30 +85,36 @@ const MyPageReview = () => {
 
   return (
     <Container>
-      <Dropdown
-        options={dropdownOptions}
-        value={currentRoomId}
-        onChange={setCurrentRoomId}
-        placeholder="방 선택"
-      />
-      <ReviewContainer>
-        {selectedReview ? (
-          <ReviewDetail
-            review={selectedReview}
-            onBack={() => setSelectedReview(null)}
-            onToggleLike={handleToggleLike}
-            likeLoadingId={likeLoadingId}
+      {isInitialLoading ? (
+        <LoadingMessage>로딩 중...</LoadingMessage>
+      ) : (
+        <>
+          <Dropdown
+            options={dropdownOptions}
+            value={currentRoomId}
+            onChange={setCurrentRoomId}
+            placeholder="방 선택"
           />
-        ) : (
-          <ReviewList
-            reviews={reviews}
-            onSelectReview={setSelectedReview}
-            isLoading={isLoading}
-            onToggleLike={handleToggleLike}
-            likeLoadingId={likeLoadingId}
-          />
-        )}
-      </ReviewContainer>
+          <ReviewContainer>
+            {selectedReview ? (
+              <ReviewDetail
+                review={selectedReview}
+                onBack={() => setSelectedReview(null)}
+                onToggleLike={handleToggleLike}
+                likeLoadingId={likeLoadingId}
+              />
+            ) : (
+              <ReviewList
+                reviews={reviews}
+                onSelectReview={setSelectedReview}
+                isLoading={isLoading}
+                onToggleLike={handleToggleLike}
+                likeLoadingId={likeLoadingId}
+              />
+            )}
+          </ReviewContainer>
+        </>
+      )}
     </Container>
   );
 };
@@ -121,4 +132,10 @@ const Container = styled.div`
 const ReviewContainer = styled.div`
   width: 40%;
   min-width: 300px;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 `;

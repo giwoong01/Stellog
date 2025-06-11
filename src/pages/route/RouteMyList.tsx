@@ -1,117 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useKakaoMap from "../../hooks/useKakaoMap";
 import locations from "../../data/locations.json";
 import styled from "styled-components";
+import { getMemberRoutes } from "../../api/route";
+import { Route, Room } from "../../types/components/route";
+import { getRandomColor } from "../../utils/colors";
 
-interface Route {
-  id: number;
-  name: string;
-  locations: typeof locations;
-  color: string;
-}
-
-interface Room {
-  id: number;
-  name: string;
-  routes: Route[];
-}
-
-// 임시 더미 데이터
-const roomsData: Room[] = [
-  {
-    id: 1,
-    name: "제주 3박4일 여행",
-    routes: [
-      { id: 1, name: "첫째날 동선", locations, color: "#4ade80" },
-      { id: 2, name: "둘째날 동선", locations, color: "#f472b6" },
-      { id: 3, name: "셋째날 동선", locations, color: "#60a5fa" },
-    ],
-  },
-  {
-    id: 2,
-    name: "제주도 맛집 투어",
-    routes: [
-      { id: 4, name: "서귀포 맛집", locations, color: "#c084fc" },
-      { id: 5, name: "제주시 맛집", locations, color: "#fb923c" },
-    ],
-  },
-  {
-    id: 3,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-  {
-    id: 4,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-  {
-    id: 5,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-  {
-    id: 6,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-  {
-    id: 7,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-  {
-    id: 8,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-  {
-    id: 9,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-  {
-    id: 10,
-    name: "제주 카페 투어",
-    routes: [
-      { id: 6, name: "해안도로 카페", locations, color: "#fbbf24" },
-      { id: 7, name: "중문 카페", locations, color: "#34d399" },
-    ],
-  },
-];
 const RouteMyList = () => {
   const [selectedRoutes, setSelectedRoutes] = useState<number[]>([]);
   const [isOpen, setIsOpen] = useState(true);
   const [expandedRooms, setExpandedRooms] = useState<number[]>([]);
+  const [roomsData, setRoomsData] = useState<Room[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [routeColors, setRouteColors] = useState<{ [key: number]: string }>({});
+
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getMemberRoutes();
+        setRoomsData(response);
+
+        const colors: { [key: number]: string } = {};
+        response.forEach((room: Room) => {
+          room.routes.forEach((route: Route) => {
+            if (!colors[route.id]) {
+              colors[route.id] = getRandomColor();
+            }
+          });
+        });
+        setRouteColors(colors);
+      } catch (error) {
+        console.error("내 동선 목록을 불러오는데 실패했습니다:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRoutes();
+  }, []);
 
   const selectedRoutesData = selectedRoutes.map((id) => {
     const route = roomsData
       .flatMap((room) => room.routes)
       .find((r) => r.id === id);
     return {
-      locations: route?.locations || [],
-      color: route?.color || "#4ade80",
+      locations: (route?.starbucksList || []).map((starbucks) => ({
+        ...starbucks,
+        address: "",
+      })),
+      color: routeColors[id] || "#4ade80",
     };
   });
 
@@ -151,28 +89,36 @@ const RouteMyList = () => {
         <RouteListTitle>방 별 동선 목록</RouteListTitle>
 
         <RouteList>
-          {roomsData.map((room) => (
-            <RoomSection key={room.id}>
-              <RoomHeader onClick={() => handleRoomToggle(room.id)}>
-                <RoomName>{room.name}</RoomName>
-                <ExpandIcon $isExpanded={expandedRooms.includes(room.id)}>
-                  ▼
-                </ExpandIcon>
-              </RoomHeader>
-              <RouteItemList $isExpanded={expandedRooms.includes(room.id)}>
-                {room.routes.map((route) => (
-                  <RouteItem key={route.id}>
-                    <Checkbox
-                      checked={selectedRoutes.includes(route.id)}
-                      onClick={() => handleRouteToggle(route.id)}
-                      $color={route.color}
-                    />
-                    <RouteName>{route.name}</RouteName>
-                  </RouteItem>
-                ))}
-              </RouteItemList>
-            </RoomSection>
-          ))}
+          {isLoading ? (
+            <LoadingMessage>로딩 중...</LoadingMessage>
+          ) : roomsData.length === 0 ? (
+            <EmptyMessage>등록된 동선이 없습니다.</EmptyMessage>
+          ) : (
+            roomsData.map((room) => (
+              <RoomSection key={room.roomId}>
+                <RoomHeader onClick={() => handleRoomToggle(room.roomId)}>
+                  <RoomName>{room.roomName}</RoomName>
+                  <ExpandIcon $isExpanded={expandedRooms.includes(room.roomId)}>
+                    ▼
+                  </ExpandIcon>
+                </RoomHeader>
+                <RouteItemList
+                  $isExpanded={expandedRooms.includes(room.roomId)}
+                >
+                  {room.routes.map((route) => (
+                    <RouteItem key={route.id}>
+                      <Checkbox
+                        checked={selectedRoutes.includes(route.id)}
+                        onClick={() => handleRouteToggle(route.id)}
+                        $color={routeColors[route.id] || "#4ade80"}
+                      />
+                      <RouteName>{route.name}</RouteName>
+                    </RouteItem>
+                  ))}
+                </RouteItemList>
+              </RoomSection>
+            ))
+          )}
         </RouteList>
       </RouteListContainer>
     </PageWrapper>
@@ -344,4 +290,16 @@ const Checkbox = styled.div<{ checked: boolean; $color: string }>`
 const RouteName = styled.span`
   font-size: 1.1rem;
   color: #0e0e0e;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+`;
+
+const EmptyMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 `;

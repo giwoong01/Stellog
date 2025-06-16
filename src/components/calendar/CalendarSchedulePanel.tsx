@@ -2,20 +2,16 @@ import { format } from "date-fns";
 import VisitedStarbucks from "./VisitedStarbucks";
 import ScheduleList from "./ScheduleList";
 import styled from "styled-components";
-import { CalendarData } from "../../pages/room/RoomCalendar";
-
-interface CalendarSchedulePanelProps {
-  selectedDate: Date;
-  calendarData: CalendarData;
-  onAddSchedule: (name: string) => void;
-  onToggleSchedule: (idx: number) => void;
-}
+import { CalendarSchedulePanelProps } from "../../types/components/calendar";
 
 const CalendarSchedulePanel = ({
   selectedDate,
   calendarData,
   onAddSchedule,
   onToggleSchedule,
+  creating,
+  onEditSchedule,
+  onDeleteSchedule,
 }: CalendarSchedulePanelProps) => {
   const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
@@ -28,6 +24,9 @@ const CalendarSchedulePanel = ({
         schedule={calendarData[formatDate(selectedDate)]?.schedule ?? []}
         onAddSchedule={onAddSchedule}
         onToggleSchedule={onToggleSchedule}
+        creating={creating}
+        onEditSchedule={onEditSchedule}
+        onDeleteSchedule={onDeleteSchedule}
       />
     </ScheduleContainer>
   );

@@ -10,7 +10,7 @@ interface RoomUserInfoProps {
   isOwner?: boolean;
 }
 
-const RoomUserInfo = ({ user, isOwner = false }: RoomUserInfoProps) => (
+const RoomUserInfo = ({ user, isOwner }: RoomUserInfoProps) => (
   <UserInfoWrapper>
     <UserSection>
       <StyledPersonIcon />

@@ -1,31 +1,34 @@
 import { format, addMonths, subMonths } from "date-fns";
 import styled, { css } from "styled-components";
 import useCalendar from "../../hooks/useCalendar";
-import { CalendarData } from "../../pages/room/RoomCalendar";
+import { CalendarProps } from "../../types/components/calendar";
+import { useEffect } from "react";
 
 export const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
-
-export interface CalendarDay {
-  date: Date | null;
-}
-
-export interface CalendarProps {
-  initialDate?: Date;
-  onDateClick: (date: Date) => void;
-  selectedDate: Date;
-  calendarData: CalendarData;
-}
 
 const Calendar = ({
   initialDate = new Date(),
   onDateClick,
   selectedDate,
   calendarData,
-}: CalendarProps) => {
+  monthSummary,
+  onMonthChange,
+}: CalendarProps & {
+  monthSummary?: {
+    [date: string]: { hasCalendar: boolean; hasReview: boolean };
+  };
+  onMonthChange?: (year: number, month: number) => void;
+}) => {
   const { currentMonth, setCurrentMonth, getMonthDays } =
     useCalendar(initialDate);
   const days = getMonthDays();
   const today = new Date();
+
+  useEffect(() => {
+    if (onMonthChange) {
+      onMonthChange(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+    }
+  }, [currentMonth]);
 
   return (
     <Container>
@@ -60,6 +63,7 @@ const Calendar = ({
             visited: [],
             schedule: [],
           };
+          const summary = monthSummary?.[dateKey];
 
           const isToday =
             date.getDate() === today.getDate() &&
@@ -81,8 +85,8 @@ const Calendar = ({
               >
                 <span>{format(date, "d")}</span>
                 <DotWrapper>
-                  {dayData.visited.length > 0 && <Dot color="#F48F9B" />}
-                  {dayData.schedule.length > 0 && <Dot color="#4ADE80" />}
+                  {summary?.hasReview && <Dot color="#F48F9B" />}
+                  {summary?.hasCalendar && <Dot color="#4ADE80" />}
                 </DotWrapper>
               </DayContent>
             </DayCell>

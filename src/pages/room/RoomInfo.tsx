@@ -7,15 +7,13 @@ import { useRoomStore } from "../../stores/useRoomStore";
 import BadgeGrid from "../../components/BadgeGrid";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthStore } from "../../stores/useAuthStore";
 
 const RoomInfo = () => {
   const { roomId } = useParams();
   const { room, setRoom } = useRoomStore();
-  const { memberInfo, fetchMemberInfo } = useAuthStore();
+  const ownerId = room?.roomMembers[0]?.id;
 
   useEffect(() => {
-    fetchMemberInfo();
     if (roomId) {
       setRoom(Number(roomId));
     }
@@ -33,12 +31,12 @@ const RoomInfo = () => {
             <RoomUserInfo
               key={member.id}
               user={member}
-              isOwner={member.id === memberInfo?.id}
+              isOwner={member.id === ownerId}
             />
           ))}
         </LeftSection>
         <RightSection>
-          <BadgeGrid badges={room?.badges || []} />
+          <BadgeGrid badges={room?.roomBadgeDtos || []} />
           <StatusCard>
             <RoomVisitStatus visitCount={room?.visitedStarbucksCount || 0} />
           </StatusCard>

@@ -1,34 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-
-interface Member {
-  id: number;
-  name: string;
-  nickname: string;
-  profileImage: string;
-}
-
-interface FollowModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  initialTab?: "followers" | "following";
-  followers: Member[];
-  following: Member[];
-}
+import { FollowModalProps } from "../../types/components/member";
+import {
+  getFollowers,
+  getFollowing,
+  getMembers,
+  followMember,
+  unfollowMember,
+} from "../../api/member";
+import { MemberInfo } from "../../types/components/member";
 
 const FollowModal = ({
   isOpen,
   onClose,
   initialTab = "followers",
-  followers,
-  following,
+  followers: initialFollowers,
+  following: initialFollowing,
+  isLoading: initialLoading = false,
 }: FollowModalProps) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"followers" | "following">(
     initialTab
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [followers, setFollowers] = useState(initialFollowers);
+  const [following, setFollowing] = useState(initialFollowing);
+  const [isLoading, setIsLoading] = useState(initialLoading);
+  const [members, setMembers] = useState<MemberInfo[]>([]);
+
+  const handleSearchChange = async (value: string) => {
+    setSearchTerm(value);
+
+    try {
+      const response = await getMembers({ name: value });
+      setMembers(response);
+    } catch (error) {
+      console.error("멤버 검색 중 오류 발생:", error);
+      setMembers([]);
+    }
+
+    if (value === "") {
+      setMembers([]);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        if (activeTab === "followers") {
+          const data = await getFollowers();
+          setFollowers(data);
+        } else {
+          const data = await getFollowing();
+          setFollowing(data);
+        }
+      } catch (error) {
+        console.error("팔로우/팔로잉 목록 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [activeTab]);
 
   const handleTabChange = (tab: "followers" | "following") => {
     setActiveTab(tab);
@@ -40,12 +77,34 @@ const FollowModal = ({
     navigate(`/mypages/members/${memberId}`);
   };
 
+  const handleFollow = async (memberId: number) => {
+    try {
+      await followMember(memberId);
+      alert("팔로우 완료!");
+    } catch (error) {
+      alert("팔로우 실패");
+    }
+  };
+
+  const handleUnfollow = async (memberId: number) => {
+    try {
+      await unfollowMember(memberId);
+      alert("팔로우 취소 완료!");
+    } catch (error) {
+      alert("팔로우 취소 실패");
+    }
+  };
+
+  const isFollowing = (memberId: number) => {
+    return following.some((member) => member.id === memberId);
+  };
+
   const filteredMembers = (
     activeTab === "followers" ? followers : following
   ).filter(
     (member) =>
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.nickname.toLowerCase().includes(searchTerm.toLowerCase())
+      member.nickName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!isOpen) return null;
@@ -54,47 +113,86 @@ const FollowModal = ({
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
-          <TabContainer>
-            <Tab
-              isActive={activeTab === "followers"}
-              onClick={() => handleTabChange("followers")}
-            >
-              팔로워
-            </Tab>
-            <Tab
-              isActive={activeTab === "following"}
-              onClick={() => handleTabChange("following")}
-            >
-              팔로잉
-            </Tab>
-          </TabContainer>
-          <CloseButton onClick={onClose}>✕</CloseButton>
+          <TabButton
+            active={activeTab === "followers"}
+            onClick={() => handleTabChange("followers")}
+          >
+            팔로워
+          </TabButton>
+          <TabButton
+            active={activeTab === "following"}
+            onClick={() => handleTabChange("following")}
+          >
+            팔로잉
+          </TabButton>
         </ModalHeader>
 
         <SearchInput
           type="text"
-          placeholder={`${
-            activeTab === "followers" ? "팔로워" : "팔로잉"
-          } 검색`}
+          placeholder="검색..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
         />
 
         <MemberList>
-          {filteredMembers.map((member) => (
-            <MemberItem key={member.id}>
-              <MemberProfile onClick={() => handleMemberClick(member.id)}>
-                <ProfileImage src={member.profileImage} alt={member.name} />
-                <MemberInfo>
+          {isLoading ? (
+            <LoadingMessage>로딩 중...</LoadingMessage>
+          ) : searchTerm ? (
+            members.length > 0 ? (
+              members.map((member) => (
+                <MemberProfile
+                  key={member.id}
+                  onClick={() => handleMemberClick(member.id)}
+                >
+                  <MemberInfoContainer>
+                    <MemberImg src={member.profileImgUrl} alt={member.name} />
+                    <MemberName>{member.name}</MemberName>
+                    <MemberNickname>{member.nickName}</MemberNickname>
+                    <FollowButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isFollowing(member.id)
+                          ? handleUnfollow(member.id)
+                          : handleFollow(member.id);
+                      }}
+                    >
+                      {isFollowing(member.id) ? "팔로우 취소" : "팔로우"}
+                    </FollowButton>
+                  </MemberInfoContainer>
+                </MemberProfile>
+              ))
+            ) : (
+              <EmptyMessage>검색 결과가 없습니다.</EmptyMessage>
+            )
+          ) : filteredMembers.length > 0 ? (
+            filteredMembers.map((member) => (
+              <MemberProfile
+                key={member.id}
+                onClick={() => handleMemberClick(member.id)}
+              >
+                <MemberInfoContainer>
+                  <MemberImg src={member.profileImageUrl} alt={member.name} />
                   <MemberName>{member.name}</MemberName>
-                  <MemberNickname>{member.nickname}</MemberNickname>
-                </MemberInfo>
+                  <MemberNickname>{member.nickName}</MemberNickname>
+                  <FollowButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      isFollowing(member.id)
+                        ? handleUnfollow(member.id)
+                        : handleFollow(member.id);
+                    }}
+                  >
+                    {isFollowing(member.id) ? "팔로우 취소" : "팔로우"}
+                  </FollowButton>
+                </MemberInfoContainer>
               </MemberProfile>
-              <DeleteButton onClick={() => {}}>삭제</DeleteButton>
-            </MemberItem>
-          ))}
-          {filteredMembers.length === 0 && (
-            <EmptyMessage>검색 결과가 없습니다.</EmptyMessage>
+            ))
+          ) : (
+            <EmptyMessage>
+              {activeTab === "followers"
+                ? "팔로워가 없습니다."
+                : "팔로잉이 없습니다."}
+            </EmptyMessage>
           )}
         </MemberList>
       </ModalContent>
@@ -119,7 +217,7 @@ const ModalOverlay = styled.div`
 
 const ModalContent = styled.div`
   background: white;
-  width: 400px;
+  width: 30vw;
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
@@ -127,36 +225,23 @@ const ModalContent = styled.div`
 
 const ModalHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 5rem;
   align-items: center;
   padding: 1rem;
   border-bottom: 1px solid #eee;
 `;
 
-const TabContainer = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-
-const Tab = styled.button<{ isActive: boolean }>`
+const TabButton = styled.button<{ active: boolean }>`
   padding: 0.5rem 1rem;
   border: none;
   background: none;
   font-size: 1rem;
-  color: ${({ isActive }) => (isActive ? "#036635" : "#666")};
-  font-weight: ${({ isActive }) => (isActive ? "bold" : "normal")};
+  color: ${({ active }) => (active ? "#036635" : "#666")};
+  font-weight: ${({ active }) => (active ? "bold" : "normal")};
   cursor: pointer;
   border-bottom: 2px solid
-    ${({ isActive }) => (isActive ? "#036635" : "transparent")};
-`;
-
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: #666;
-  padding: 0.5rem;
+    ${({ active }) => (active ? "#036635" : "transparent")};
 `;
 
 const SearchInput = styled.input`
@@ -173,9 +258,9 @@ const SearchInput = styled.input`
 `;
 
 const MemberList = styled.div`
-  max-height: 400px;
+  max-height: 30vh;
   overflow-y: auto;
-  padding: 0 1rem;
+  padding: 0 1rem 1rem 1rem;
 
   &::-webkit-scrollbar {
     width: 0.4rem;
@@ -188,18 +273,6 @@ const MemberList = styled.div`
   &::-webkit-scrollbar-thumb {
     background: #036635;
     border-radius: 0.2rem;
-  }
-`;
-
-const MemberItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid #eee;
-
-  &:last-child {
-    border-bottom: none;
   }
 `;
 
@@ -217,16 +290,18 @@ const MemberProfile = styled.div`
   }
 `;
 
-const ProfileImage = styled.img`
+const MemberImg = styled.img`
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
   object-fit: cover;
 `;
 
-const MemberInfo = styled.div`
+const MemberInfoContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
 `;
 
 const MemberName = styled.span`
@@ -239,23 +314,31 @@ const MemberNickname = styled.span`
   font-size: 0.9rem;
 `;
 
-const DeleteButton = styled.button`
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 2rem;
-  background: white;
-  color: #666;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    background: #f8f9fa;
-    border-color: #666;
-  }
-`;
-
 const EmptyMessage = styled.div`
   text-align: center;
   padding: 2rem;
   color: #666;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+`;
+
+const FollowButton = styled.button`
+  padding: 0.2rem 0.4rem;
+  background: #036635;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: auto;
+
+  &:hover {
+    background: #024826;
+  }
 `;

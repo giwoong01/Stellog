@@ -14,7 +14,10 @@ export interface Room {
     name: string;
   }[];
   visitedStarbucksCount: number;
-  badges: number[];
+  roomBadgeDtos: {
+    id: number;
+    name: string;
+  }[];
   reviews: {
     id: number;
     title: string;

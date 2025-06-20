@@ -28,15 +28,9 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     if (error.response.status === 401) {
-      try {
-        return axiosInstance(error.config);
-      } catch (refreshError) {
-        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-
-        localStorage.clear();
-
-        return Promise.reject(refreshError);
-      }
+      alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+      localStorage.clear();
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);

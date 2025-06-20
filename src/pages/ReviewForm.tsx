@@ -7,6 +7,7 @@ import CreateButton from "../components/CreateButton";
 import DatePickerInput from "../components/review/DatePickerInput";
 import { createReview, updateReview } from "../api/review";
 import { uploadImage } from "../api/image";
+import { addDays, format } from "date-fns";
 
 const ReviewForm = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,7 +59,7 @@ const ReviewForm = () => {
       const reviewData = {
         title: reviewName,
         content,
-        visitedAt,
+        visitedAt: visitedAt ? format(visitedAt, "yyyy-MM-dd") : null,
         starbucksId,
         mainImgUrl,
       };

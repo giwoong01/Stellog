@@ -1,3 +1,6 @@
 export interface BadgeGridProps {
-  badges: number[];
+  badges: {
+    id: number;
+    name: string;
+  }[];
 }

@@ -1,11 +1,7 @@
-import { CalendarItem } from "../../pages/room/RoomCalendar";
 import { ReactComponent as VisitedStarbucksIconSVG } from "../../assets/icons/category.svg";
 import { ReactComponent as CoffeeIconSVG } from "../../assets/icons/coffee.svg";
 import styled from "styled-components";
-
-interface VisitedStarbucksProps {
-  visited: CalendarItem[];
-}
+import { VisitedStarbucksProps } from "../../types/components/calendar";
 
 const VisitedStarbucks = ({ visited }: VisitedStarbucksProps) => {
   return (
@@ -19,7 +15,7 @@ const VisitedStarbucks = ({ visited }: VisitedStarbucksProps) => {
           {visited.map((item, idx) => (
             <VisitedStarbucksItem key={idx}>
               <StyledCoffeeIcon />
-              {item.name}
+              {item.starbucksName}
             </VisitedStarbucksItem>
           ))}
         </VisitedStarbucksListContainer>

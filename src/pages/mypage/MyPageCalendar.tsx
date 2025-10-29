@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import Calendar from "../../components/calendar/Calendar";
 import CalendarSchedulePanel from "../../components/calendar/CalendarSchedulePanel";
 import { format } from "date-fns";
 import Dropdown from "../../components/Dropdown";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   createCalendar,
   getCalendarsByRoom,
@@ -41,9 +41,30 @@ const MyPageCalendar = () => {
   const calendarData = roomCalendarData[roomKey] || {};
   const formatDate = (date: Date) => format(date, "yyyy-MM-dd");
 
+  const handleMonthChange = useCallback(
+    async (year: number, month: number) => {
+      if (!roomId) return;
+      const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
+      try {
+        const data = await getCalendarMonthSummary(Number(roomId), yearMonth);
+        const summaryMap = (data.days || []).reduce((acc: any, day: any) => {
+          acc[day.date] = {
+            hasCalendar: day.hasCalendar,
+            hasReview: day.hasReview,
+          };
+          return acc;
+        }, {});
+        setMonthSummary(summaryMap);
+      } catch (e) {
+        setMonthSummary({});
+      }
+    },
+    [roomId]
+  );
+
   useEffect(() => {
     setRooms();
-  }, []);
+  }, [setRooms]);
 
   useEffect(() => {
     if (rooms.length > 0) {
@@ -76,7 +97,20 @@ const MyPageCalendar = () => {
       }
     };
     fetchCalendar();
-  }, [roomId, selectedDate]);
+  }, [roomId, selectedDate, roomKey]);
+
+  // roomId가 변경될 때 monthSummary 초기화 및 현재 월의 요약 데이터 로드
+  useEffect(() => {
+    if (!roomId || !selectedDate) return;
+
+    // monthSummary 초기화
+    setMonthSummary({});
+
+    // 현재 선택된 날짜의 월별 요약 데이터 로드
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth() + 1;
+    handleMonthChange(year, month);
+  }, [roomId, selectedDate, handleMonthChange]);
 
   const handleAddSchedule = async (name: string) => {
     if (!selectedDate || !roomId) return;
@@ -196,24 +230,6 @@ const MyPageCalendar = () => {
     }
   };
 
-  const handleMonthChange = async (year: number, month: number) => {
-    if (!roomId) return;
-    const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
-    try {
-      const data = await getCalendarMonthSummary(Number(roomId), yearMonth);
-      const summaryMap = (data.days || []).reduce((acc: any, day: any) => {
-        acc[day.date] = {
-          hasCalendar: day.hasCalendar,
-          hasReview: day.hasReview,
-        };
-        return acc;
-      }, {});
-      setMonthSummary(summaryMap);
-    } catch (e) {
-      setMonthSummary({});
-    }
-  };
-
   if (!rooms || rooms.length === 0) {
     return (
       <EmptyContainer>
@@ -271,14 +287,6 @@ const Container = styled.div`
   align-items: center;
   gap: 2rem;
   padding: 2rem;
-`;
-
-const HeaderContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  justify-content: center;
 `;
 
 const EmptyContainer = styled.div`

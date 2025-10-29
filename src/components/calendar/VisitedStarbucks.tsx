@@ -40,7 +40,7 @@ const StyledVisitedStarbucksIcon = styled(VisitedStarbucksIconSVG)`
 `;
 
 const VisitedStarbucksTitle = styled.div`
-  width: 40%;
+  width: 45%;
   color: #0e0e0e;
   font-weight: bold;
   background-color: #f48f9b;

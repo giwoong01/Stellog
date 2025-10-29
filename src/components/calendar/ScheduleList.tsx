@@ -179,7 +179,7 @@ const StyledScheduleIcon = styled(ScheduleIconSVG)`
 `;
 
 const ScheduleTitle = styled.div`
-  width: 30%;
+  width: 35%;
   color: #0e0e0e;
   font-weight: bold;
   background-color: #4ade80;
